@@ -16,7 +16,7 @@ El modal de anotación no se cierra. Las pestañas Marcador y Descalificaciones 
 
 ## Caso: juego limpio (PROD-39, JIN 2026)
 
-El contador se suma a lo que la digitación ya muestra. **Supuesto de la demo:** todas las mediciones de la tabla de cada deporte se dan por registrables, salvo las que la digitación aún no tiene según César Meneses (expulsión de cuerpo técnico, amonestación de balonmano y «conducta violenta» de baloncesto), que salen como «Falta construir». Spec: `nao-spec-design/specs/deporte/digitacion`.
+El contador se suma a lo que la digitación ya muestra. **Supuesto de la demo:** muestra cómo se va a ver, así que todas las mediciones de la tabla de cada deporte están activas. En la digitación real aún no existen (César Meneses, 2026-11-04): expulsión de cuerpo técnico, amonestación de balonmano y «conducta violenta» de baloncesto; el cuerpo técnico se atribuye a su propia lista.
 
 ## Estructura
 

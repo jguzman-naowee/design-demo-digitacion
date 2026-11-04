@@ -390,3 +390,9 @@ body {
   background: #dbeafe;
   color: #1e3a8a;
 }
+
+/* DC-008: los puntos de JL son un label azul normal, unido a la línea de abajo del nombre */
+.dg-jl-txt {
+  color: #1e40af;
+  font-weight: 400;
+}

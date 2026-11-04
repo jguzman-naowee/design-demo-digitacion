@@ -10,13 +10,15 @@
       id: 'ant',
       nombre: 'Colegio Demo Antioquia',
       depto: 'ANTIOQUIA',
-      jugadores: ['Santiago Ríos', 'Mateo Cano', 'Juan Gómez', 'Luis Tobón', 'David Muñoz']
+      jugadores: ['Santiago Ríos', 'Mateo Cano', 'Juan Gómez', 'Luis Tobón', 'David Muñoz'],
+      tecnicos: ['Carlos Mora · Entrenador', 'Luis Peña · Asistente']
     },
     {
       id: 'val',
       nombre: 'Colegio Demo Valle',
       depto: 'VALLE',
-      jugadores: ['Nicolás Prado', 'Samuel Vega', 'Andrés Cruz', 'Felipe Mejía', 'Tomás Rojas']
+      jugadores: ['Nicolás Prado', 'Samuel Vega', 'Andrés Cruz', 'Felipe Mejía', 'Tomás Rojas'],
+      tecnicos: ['Julián Soto · Entrenador', 'Camilo Ríos · Asistente']
     }
   ]
   var S = {}
@@ -204,7 +206,7 @@
       }
     })
     return orden.map(function (j) {
-      return { nombre: e.jugadores[j - 1], n: por[j] }
+      return { nombre: j > 100 ? e.tecnicos[j - 101] : e.jugadores[j - 1], n: por[j] }
     })
   }
   /* Jugadores como chips que se acomodan en dos líneas; si son más de cuatro, tres y «+N». Alto fijo. */
@@ -365,15 +367,18 @@
         cabeza() +
         d.mediciones
           .map(function (m) {
+            var jl = 'JL +' + m.puntos
             var rot =
               '<span class="dg-et">' +
               esc(m.etiqueta) +
-              ' ' +
-              tag('JL +' + m.puntos) +
               '</span>' +
-              (m.estado !== 'si'
-                ? '<span class="dg-sub" title="' + esc(m.nota) + '">' + esc(m.nota) + '</span>'
-                : '')
+              '<span class="dg-sub" title="' +
+              esc(jl + (m.estado !== 'si' ? ' · ' + m.nota : '')) +
+              '"><span class="dg-jl-txt">' +
+              jl +
+              '</span>' +
+              (m.estado !== 'si' ? ' · ' + esc(m.nota) : '') +
+              '</span>'
             if (m.estado !== 'si')
               return fila(
                 'dg-fila--inc',
@@ -478,20 +483,27 @@
       el = document.createElement('div')
     el.className = 'dg-pop'
     el.setAttribute('role', 'menu')
-    el.setAttribute('aria-label', 'Jugador de ' + e.nombre)
+    var med = dep().mediciones.filter(function (x) {
+      return x.id === m
+    })[0]
+    var staff = !!(med && med.tecnico)
+    var lista = staff ? e.tecnicos : e.jugadores,
+      base = staff ? 101 : 1
+    el.setAttribute('aria-label', (staff ? 'Cuerpo técnico de ' : 'Jugador de ') + e.nombre)
     el.innerHTML =
-      '<p class="dg-pop__tit">¿A qué jugador?</p>' +
-      e.jugadores
+      '<p class="dg-pop__tit">' +
+      (staff ? '¿A qué integrante del cuerpo técnico?' : '¿A qué jugador?') +
+      '</p>' +
+      lista
         .map(function (nm, i) {
-          var x = expulsado(eq, i + 1)
+          var x = expulsado(eq, base + i)
           return (
             '<button type="button" class="dg-pop__item" role="menuitem" data-acc="asignar" data-j="' +
-            (i + 1) +
+            (base + i) +
             '"' +
             (x ? ' disabled' : '') +
             '><span>' +
-            (i + 1) +
-            ' · ' +
+            (staff ? '' : i + 1 + ' · ') +
             esc(nm) +
             '</span>' +
             (x ? '<small>expulsado</small>' : '') +

@@ -1,14 +1,12 @@
 /**
- * SUPUESTO DE LA DEMO (Jorge, 2026-11-04): todas las mediciones de la tabla se dan por registrables, salvo las que
- * César dijo que faltan (cuerpo técnico, amonestación de balonmano, «conducta violenta»). El resto estaba por confirmar.
+ * SUPUESTO DE LA DEMO (Jorge, 2026-11-04): la demo muestra cómo se va a ver, así que TODAS las mediciones de la tabla
+ * están activas. En la digitación real aún no existen (César Meneses): expulsión de cuerpo técnico, amonestación de
+ * balonmano y «conducta violenta» de baloncesto. El resto estaba por confirmar.
  *
  * Tablas de juego limpio de los siete deportes de conjunto (reglamentos 2026 y Excel de PROD-39) y qué
  * de eso puede registrar hoy la digitación, según César Meneses (2026-11-04). El contador solo suma
  * lo que está en la tabla de su deporte (DIG-CT-01).
  */
-
-const FALTA_TECNICO = 'Aún no se puede registrar: solo se atribuye a jugadores de la nómina'
-const FALTA_TIPO = 'Falta el tipo en la digitación: hoy queda como texto libre'
 
 const futbol = (azul) => [
   { estado: 'si', etiqueta: 'Tarjeta amarilla', id: 'amarilla', puntos: 10 },
@@ -25,10 +23,11 @@ const futbol = (azul) => [
     puntos: 30
   },
   {
-    estado: 'falta',
+    estado: 'si',
     etiqueta: 'Expulsión de cuerpo técnico',
+    tecnico: true,
+    expulsa: true,
     id: 'tecnico',
-    nota: FALTA_TECNICO,
     puntos: 80
   },
   {
@@ -82,14 +81,15 @@ const DEPORTES = [
       {
         estado: 'si',
         etiqueta: 'Descalificación de cuerpo técnico',
+        tecnico: true,
+        expulsa: true,
         id: 'tecnico',
         puntos: 80
       },
       {
-        estado: 'falta',
+        estado: 'si',
         etiqueta: 'Conducta violenta o terminación del encuentro',
         id: 'agresion',
-        nota: FALTA_TIPO,
         puntos: 100
       }
     ],
@@ -111,10 +111,9 @@ const DEPORTES = [
         puntos: 50
       },
       {
-        estado: 'falta',
+        estado: 'si',
         etiqueta: 'Conducta violenta o terminación del encuentro',
         id: 'agresion',
-        nota: FALTA_TIPO,
         puntos: 100
       }
     ],
@@ -127,10 +126,9 @@ const DEPORTES = [
     id: 'balonmano',
     mediciones: [
       {
-        estado: 'falta',
+        estado: 'si',
         etiqueta: 'Tarjeta amarilla de jugador',
         id: 'amarilla',
-        nota: FALTA_TIPO,
         puntos: 10
       },
       { estado: 'si', etiqueta: 'Exclusión de jugador (2 minutos)', id: 'exclusion', puntos: 15 },
@@ -143,15 +141,17 @@ const DEPORTES = [
         puntos: 40
       },
       {
-        estado: 'falta',
+        estado: 'si',
         etiqueta: 'Tarjeta amarilla de cuerpo técnico',
+        tecnico: true,
         id: 'amarillaTecnico',
-        nota: FALTA_TIPO,
         puntos: 60
       },
       {
         estado: 'si',
         etiqueta: 'Descalificación de cuerpo técnico',
+        tecnico: true,
+        expulsa: true,
         id: 'tecnico',
         puntos: 100
       }
