@@ -203,18 +203,46 @@
         por[t.j]++
       }
     })
-    return orden
-      .map(function (j) {
-        return e.jugadores[j - 1] + (por[j] > 1 ? ' ×' + por[j] : '')
+    return orden.map(function (j) {
+      return { nombre: e.jugadores[j - 1], n: por[j] }
+    })
+  }
+  /* Jugadores como chips que se acomodan en dos líneas; si son más de cuatro, tres y «+N». Alto fijo. */
+  function chips(lista) {
+    var todos = lista
+      .map(function (x) {
+        return x.nombre + (x.n > 1 ? ' ×' + x.n : '')
       })
       .join(', ')
+    var ver = lista.length > 4 ? lista.slice(0, 3) : lista
+    var h = ver
+      .map(function (x) {
+        return (
+          '<li class="dg-chip"><span class="dg-chip__n">' +
+          esc(x.nombre) +
+          '</span>' +
+          (x.n > 1 ? '<b>×' + x.n + '</b>' : '') +
+          '</li>'
+        )
+      })
+      .join('')
+    if (lista.length > 4) h += '<li class="dg-chip dg-chip--mas"><b>+' + (lista.length - 3) + '</b></li>'
+    return (
+      '<ul class="dg-chips" aria-label="Jugadores: ' +
+      esc(todos) +
+      '" title="' +
+      esc(todos) +
+      '">' +
+      h +
+      '</ul>'
+    )
   }
-  /* Celda con contador − n +. Alto fijo: la lista de jugadores va en una sola línea con elipsis. */
+  /* Celda con contador − n +. Alto fijo: los jugadores van en chips de dos líneas como máximo. */
   function contador(eq, etiqueta, m, simple) {
     var e = equipo(eq)
     var n = simple ? S.otras[eq + '|' + m] || 0 : cuenta(eq, m)
     var bloq = !editable()
-    var q = simple ? '' : quienes(eq, m)
+    var q = simple ? '' : chips(quienes(eq, m))
     return (
       '<div class="dg-celda" role="cell"><div class="dg-cnt">' +
       ib(
@@ -233,7 +261,7 @@
         bloq
       ) +
       '</div>' +
-      (simple ? '' : '<span class="dg-quien" title="' + esc(q) + '">' + esc(q) + '</span>') +
+      (simple ? '' : q) +
       '</div>'
     )
   }
@@ -351,10 +379,7 @@
                 'dg-fila--inc',
                 rot,
                 '<div class="dg-celda dg-celda--off" role="cell">' +
-                  tag(
-                    m.estado === 'falta' ? 'Falta construir' : 'Por confirmar',
-                    m.estado === 'falta' ? 'warning' : 'neutral'
-                  ) +
+                  tag('Falta construir', 'warning') +
                   '</div>'
               )
             if (m.derivadaDe)

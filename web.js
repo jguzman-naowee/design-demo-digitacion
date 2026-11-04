@@ -23,7 +23,7 @@
     $("gRol").hidden = !roles().length;
     $("segRol").innerHTML = roles().map((r) => {
       const on = r.id === rol;
-      return '<button type="button" class="tt-role' + (on ? " is-active" : "") + '" data-r="' + esc(r.id) + '" title="' + esc(r.desc || "") + '" aria-pressed="' + on + '"><i aria-hidden="true">' + esc(r.ini || r.etiqueta.slice(0, 2)) + "</i><span><b>" + esc(r.etiqueta) + "</b>" + (r.tag ? '<span class="tt-tag">' + esc(r.tag) + "</span>" : "") + "</span></button>";
+      return '<button type="button" class="tt-role' + (on ? " is-active" : "") + '" data-r="' + esc(r.id) + '" title="' + esc(r.desc || "") + '" aria-pressed="' + on + '">' + esc(r.etiqueta) + "</button>";
     }).join("");
     $("gEsc").hidden = !(app.escenarios || []).length;
     $("segEsc").innerHTML = (app.escenarios || []).map((e) => { const on = e.valor === esc2; return '<button type="button" data-h="' + esc(e.valor) + '" class="' + (on ? "is-active" : "") + '" aria-pressed="' + on + '">' + esc(e.etiqueta) + "</button>"; }).join("");

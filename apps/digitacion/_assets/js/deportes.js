@@ -1,4 +1,7 @@
 /**
+ * SUPUESTO DE LA DEMO (Jorge, 2026-11-04): todas las mediciones de la tabla se dan por registrables, salvo las que
+ * César dijo que faltan (cuerpo técnico, amonestación de balonmano, «conducta violenta»). El resto estaba por confirmar.
+ *
  * Tablas de juego limpio de los siete deportes de conjunto (reglamentos 2026 y Excel de PROD-39) y qué
  * de eso puede registrar hoy la digitación, según César Meneses (2026-11-04). El contador solo suma
  * lo que está en la tabla de su deporte (DIG-CT-01).
@@ -6,12 +9,11 @@
 
 const FALTA_TECNICO = 'Aún no se puede registrar: solo se atribuye a jugadores de la nómina'
 const FALTA_TIPO = 'Falta el tipo en la digitación: hoy queda como texto libre'
-const SIN_CONFIRMAR = 'Por confirmar con César si la digitación lo registra'
 
 const futbol = (azul) => [
   { estado: 'si', etiqueta: 'Tarjeta amarilla', id: 'amarilla', puntos: 10 },
   ...(azul
-    ? [{ estado: 'sinConfirmar', etiqueta: 'Tarjeta azul', id: 'azul', nota: SIN_CONFIRMAR, puntos: 15 }]
+    ? [{ estado: 'si', etiqueta: 'Tarjeta azul', id: 'azul', puntos: 15 }]
     : [
         { derivadaDe: 'amarilla', estado: 'si', etiqueta: 'Roja por doble amarilla', id: 'doble', puntos: 15 }
       ]),
@@ -30,10 +32,9 @@ const futbol = (azul) => [
     puntos: 80
   },
   {
-    estado: azul ? 'si' : 'sinConfirmar',
+    estado: 'si',
     etiqueta: 'Agresión física o terminación del encuentro',
     id: 'agresion',
-    nota: azul ? 'Se registra como descalificación del equipo, por su causa' : SIN_CONFIRMAR,
     puntos: 100
   }
 ]
@@ -69,21 +70,19 @@ const DEPORTES = [
     id: 'baloncesto',
     mediciones: [
       {
-        estado: 'sinConfirmar',
+        estado: 'si',
         etiqueta: 'Expulsión por acumulación de faltas',
         expulsa: true,
         id: 'acumulacion',
-        nota: SIN_CONFIRMAR,
         puntos: 10
       },
       { estado: 'si', etiqueta: 'Falta técnica', id: 'tecnica', puntos: 20 },
       { estado: 'si', etiqueta: 'Falta antideportiva', id: 'antideportiva', puntos: 30 },
       { estado: 'si', etiqueta: 'Falta descalificadora', expulsa: true, id: 'descalificadora', puntos: 50 },
       {
-        estado: 'sinConfirmar',
+        estado: 'si',
         etiqueta: 'Descalificación de cuerpo técnico',
         id: 'tecnico',
-        nota: SIN_CONFIRMAR,
         puntos: 80
       },
       {
@@ -105,11 +104,10 @@ const DEPORTES = [
       { estado: 'si', etiqueta: 'Falta antideportiva', id: 'antideportiva', puntos: 20 },
       { estado: 'si', etiqueta: 'Falta descalificadora', expulsa: true, id: 'descalificadora', puntos: 30 },
       {
-        estado: 'sinConfirmar',
+        estado: 'si',
         etiqueta: 'Descalificación por acumulación de antideportivas',
         expulsa: true,
         id: 'acumulacion',
-        nota: SIN_CONFIRMAR,
         puntos: 50
       },
       {
@@ -138,11 +136,10 @@ const DEPORTES = [
       { estado: 'si', etiqueta: 'Exclusión de jugador (2 minutos)', id: 'exclusion', puntos: 15 },
       { estado: 'si', etiqueta: 'Descalificación de jugador (roja)', expulsa: true, id: 'roja', puntos: 25 },
       {
-        estado: 'sinConfirmar',
+        estado: 'si',
         etiqueta: 'Tarjeta azul de jugador',
         expulsa: true,
         id: 'azul',
-        nota: SIN_CONFIRMAR,
         puntos: 40
       },
       {
@@ -153,10 +150,9 @@ const DEPORTES = [
         puntos: 60
       },
       {
-        estado: 'sinConfirmar',
+        estado: 'si',
         etiqueta: 'Descalificación de cuerpo técnico',
         id: 'tecnico',
-        nota: SIN_CONFIRMAR,
         puntos: 100
       }
     ],
@@ -169,34 +165,30 @@ const DEPORTES = [
     id: 'voleibol',
     mediciones: [
       {
-        estado: 'sinConfirmar',
+        estado: 'si',
         etiqueta: 'Tarjeta amarilla',
         id: 'amarilla',
-        nota: SIN_CONFIRMAR,
         puntos: 10
       },
-      { estado: 'sinConfirmar', etiqueta: 'Tarjeta roja', id: 'roja', nota: SIN_CONFIRMAR, puntos: 30 },
+      { estado: 'si', etiqueta: 'Tarjeta roja', id: 'roja', puntos: 30 },
       {
-        estado: 'sinConfirmar',
+        estado: 'si',
         etiqueta: 'Expulsión',
         expulsa: true,
         id: 'expulsion',
-        nota: SIN_CONFIRMAR,
         puntos: 80
       },
       {
-        estado: 'sinConfirmar',
+        estado: 'si',
         etiqueta: 'Descalificación',
         expulsa: true,
         id: 'descalificacion',
-        nota: SIN_CONFIRMAR,
         puntos: 90
       },
       {
-        estado: 'sinConfirmar',
+        estado: 'si',
         etiqueta: 'Agresión o terminación (incluye barras y padres)',
         id: 'agresion',
-        nota: SIN_CONFIRMAR,
         puntos: 100
       }
     ],
