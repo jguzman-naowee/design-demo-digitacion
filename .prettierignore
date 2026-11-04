@@ -1,4 +1,5 @@
-dist
 node_modules
-docs/artefacto-*.html
+_assets/css/styles.css
+_assets/css/components.min.css
+_assets/css/icons.min.css
 package-lock.json

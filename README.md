@@ -1,16 +1,21 @@
 # design-demo-digitacion
 
-Prototipo de diseño de la **digitación de resultados** (Naowee · Ministerio del Deporte). Replica la pantalla real de `suite-web-v2` (`features/digitacion`) y muestra cambios por casos. No consulta ningún servicio.
+Demo de diseño de la **digitación de resultados** (Naowee · Ministerio del Deporte). Muestra cambios sobre la pantalla real de `suite-web-v2` (`features/digitacion`) y no consulta ningún servicio: los datos son de ejemplo.
 
-Casos:
+Estático: HTML, CSS y JS planos, sin build. Funciona en GitHub Pages (`.nojekyll` incluido). Usa los estilos de `@naowee-tech/sdk-frontend-foundations` (MIT) copiados a `_assets/`, con el mismo marcado `nwt-*` del SDK.
 
-- **Juego limpio** (PROD-39): el contador se suma a lo que la digitación ya muestra. Spec: `nao-spec-design/specs/deporte/digitacion`.
+## Caso: juego limpio (PROD-39, JIN 2026)
+
+El contador se suma a lo que la digitación ya muestra. Selector de los 7 deportes de conjunto, cada uno con su tabla de puntos. Lo que la digitación aún no registra queda como «Falta construir» o «Por confirmar». Spec: `nao-spec-design/specs/deporte/digitacion`.
+
+- `?rol=digitador|coordinador`: el coordinador ve «Corregir resultado».
+- `?deporte=<id>`: `futbol`, `futbol-sala`, `futbol-salon`, `baloncesto`, `baloncesto-3x3`, `balonmano`, `voleibol`.
+- `window.DEMO.restablecer()`: vuelve al estado inicial (lo usa el marco `design-layouts-demos`).
 
 ## Correr en local
 
 ```bash
-NPM_TOKEN=$(gh auth token) npm install   # los paquetes @naowee-tech son privados
-npm run dev                              # http://localhost:4710
+python3 -m http.server 8780   # http://localhost:8780
 ```
 
-UI siempre con el SDK (`@naowee-tech/sdk-react-components` sobre `foundations`). Textos en español.
+Para refrescar los estilos del SDK: `NPM_TOKEN=$(gh auth token) npm install && npm run foundations`.
