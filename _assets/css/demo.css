@@ -79,108 +79,6 @@ body {
   display: block;
 }
 
-/* Tablas: encabezado gris como la digitación real */
-.dg-scroll {
-  overflow-x: auto;
-}
-.dg-tabla {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 36rem;
-  font-size: 0.875rem;
-}
-.dg-tabla thead th {
-  background: #f1f0f6;
-  padding: 0.625rem 0.75rem;
-  text-align: center;
-  font-weight: 600;
-  color: #3a3b52;
-}
-.dg-tabla thead th:first-child {
-  text-align: left;
-}
-.dg-tabla td,
-.dg-tabla tbody th {
-  padding: 0.625rem 0.75rem;
-  border-bottom: 1px solid #ece9f3;
-  vertical-align: top;
-}
-.dg-tabla tbody th {
-  text-align: left;
-  font-weight: 500;
-}
-.dg-tabla td {
-  text-align: center;
-}
-.dg-tabla--grupo thead th,
-.dg-tabla--grupo td {
-  padding: 0.5rem 0.5rem;
-}
-.dg-celda {
-  min-width: 11rem;
-}
-.dg-celda--off {
-  background: #faf9fd;
-}
-.dg-cnt {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.dg-val {
-  min-width: 1.5rem;
-  font-weight: 700;
-}
-.dg-quien {
-  list-style: none;
-  margin: 0.25rem 0 0;
-  padding: 0;
-  font-size: 0.8125rem;
-}
-.dg-total th,
-.dg-total td {
-  background: #f7f7fb;
-  border-bottom: 0;
-}
-.dg-jl {
-  display: block;
-  font-size: 1.5rem;
-}
-.dg-seccion {
-  margin: 1rem 0 0.5rem;
-}
-
-.dg-menu {
-  list-style: none;
-  margin: 0.25rem auto;
-  padding: 0.25rem;
-  width: max-content;
-  border: 1px solid #d8dee9;
-  border-radius: 0.5rem;
-  background: #fff;
-  text-align: left;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
-}
-.dg-menu__item {
-  display: block;
-  width: 100%;
-  padding: 0.375rem 0.625rem;
-  border: 0;
-  border-radius: 0.375rem;
-  background: transparent;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-.dg-menu__item:hover,
-.dg-menu__item:focus-visible {
-  background: #f3eefa;
-}
-.dg-menu__item:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
 /* Modal ancho como el real (860px) */
 .dg-modal .nwt-modal__content {
   width: min(860px, 94vw);
@@ -192,11 +90,230 @@ body {
   padding: 1rem 0 0;
 }
 .dg-pie {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
-  padding-top: 1rem;
+  margin: 0 -24px;
+  padding: 1rem 24px;
+  background: #fff;
+  border-top: 1px solid #ece9f3;
 }
 .dg-nota {
   margin: 0;
+}
+
+/* Solo el modal: nada detrás */
+.dg-vacio {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+/* Cada acción repinta el modal: sin animación de entrada para que no parpadee */
+.dg-modal,
+.dg-modal .nwt-modal__content,
+.dg-modal .nwt-modal__backdrop {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Rejilla: todas las filas tienen alto fijo para que nada cambie de tamaño al sumar o quitar */
+.dg-grid {
+  border: 1px solid #ece9f3;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  font-size: 0.875rem;
+}
+.dg-fila {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) repeat(2, minmax(0, 1fr));
+  align-items: center;
+  height: 3.5rem;
+  border-bottom: 1px solid #ece9f3;
+}
+.dg-fila:last-child {
+  border-bottom: 0;
+}
+.dg-fila--inc,
+.dg-fila--total {
+  height: 4.75rem;
+}
+.dg-fila--cab {
+  background: #f1f0f6;
+  font-weight: 600;
+  color: #3a3b52;
+}
+.dg-fila--total {
+  background: #f7f7fb;
+}
+.dg-rot,
+.dg-th,
+.dg-celda {
+  min-width: 0;
+  padding: 0 0.75rem;
+}
+.dg-rot {
+  display: grid;
+  gap: 2px;
+  align-content: center;
+}
+.dg-th {
+  text-align: center;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.dg-et {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-weight: 500;
+}
+.dg-sub,
+.dg-quien {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: #646587;
+}
+.dg-sub {
+  height: 1rem;
+}
+.dg-celda {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 2px;
+  height: 100%;
+}
+.dg-celda--off {
+  grid-column: span 2;
+  background: #faf9fd;
+}
+.dg-cnt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 7.5rem;
+}
+.dg-cnt--solo {
+  justify-content: center;
+}
+.dg-val {
+  min-width: 2ch;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+.dg-quien {
+  height: 1rem;
+  text-align: center;
+}
+.dg-jl {
+  display: block;
+  font-size: 1.5rem;
+  line-height: 1.75rem;
+}
+.dg-seccion {
+  margin: 1rem 0 0.5rem;
+}
+
+/* Capa flotante: no empuja la UI */
+#dg-fx {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100000;
+}
+.dg-pop {
+  position: fixed;
+  width: 14rem;
+  padding: 0.375rem;
+  border: 1px solid #d8dee9;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 8px 24px rgb(31 31 43 / 16%);
+  pointer-events: auto;
+}
+.dg-pop__tit {
+  margin: 0;
+  padding: 0.375rem 0.625rem;
+  font-size: 0.75rem;
+  color: #646587;
+}
+.dg-pop__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: left;
+  cursor: pointer;
+}
+.dg-pop__item small {
+  color: #646587;
+}
+.dg-pop__item:hover,
+.dg-pop__item:focus-visible {
+  background: #f3eefa;
+  outline: none;
+}
+.dg-pop__item:focus-visible {
+  box-shadow: inset 0 0 0 2px #c64d24;
+}
+.dg-pop__item:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Badge de feedback: sube y se desvanece */
+.dg-flota {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  animation: dg-sube 1s ease-out forwards;
+}
+.dg-flota .nwt-tag {
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgb(31 31 43 / 18%);
+}
+@keyframes dg-sube {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -80%);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -260%);
+  }
+}
+@keyframes dg-desvanece {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dg-flota {
+    animation: dg-desvanece 0.8s ease-out forwards;
+    transform: translate(-50%, -140%);
+  }
 }

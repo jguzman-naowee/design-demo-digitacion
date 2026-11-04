@@ -19,51 +19,6 @@
       jugadores: ['Nicolás Prado', 'Samuel Vega', 'Andrés Cruz', 'Felipe Mejía', 'Tomás Rojas']
     }
   ]
-  var TABLAS = {
-    futbol: {
-      cols: ['PJ', 'G', 'E', 'P', 'GF', 'GC', 'Dif', 'Pts'],
-      filas: [
-        ['Colegio Demo Antioquia', 1, 1, 0, 0, 5, 1, '+4', 3, 10],
-        ['Colegio Demo Valle', 1, 0, 0, 1, 2, 2, '+0', 0, 15],
-        ['Colegio Demo Bogotá', 1, 1, 0, 0, 3, 1, '+2', 3, 0],
-        ['Colegio Demo Atlántico', 1, 0, 0, 1, 0, 4, '-4', 0, 20]
-      ]
-    },
-    baloncesto: {
-      cols: ['PJ', 'G', 'P', 'PF', 'PC', 'Dif', 'Pts'],
-      filas: [
-        ['Colegio Demo Antioquia', 1, 1, 0, 68, 55, '+13', 3, 10],
-        ['Colegio Demo Valle', 1, 0, 1, 55, 68, '-13', 0, 20],
-        ['Colegio Demo Bogotá', 1, 1, 0, 72, 60, '+12', 3, 0],
-        ['Colegio Demo Atlántico', 1, 0, 1, 60, 72, '-12', 0, 30]
-      ]
-    },
-    voleibol: {
-      cols: ['PJ', 'G', 'P', 'SG', 'SP', 'Dif', 'Pts'],
-      filas: [
-        ['Colegio Demo Antioquia', 1, 1, 0, 3, 0, '+3', 3, 0],
-        ['Colegio Demo Valle', 1, 0, 1, 0, 3, '-3', 0, 10],
-        ['Colegio Demo Bogotá', 1, 1, 0, 3, 1, '+2', 3, 10],
-        ['Colegio Demo Atlántico', 1, 0, 1, 1, 3, '-2', 0, 0]
-      ]
-    }
-  }
-  var TIPS = {
-    PJ: 'Partidos jugados',
-    G: 'Partidos ganados',
-    E: 'Partidos empatados',
-    P: 'Partidos perdidos',
-    GF: 'Goles a favor',
-    GC: 'Goles en contra',
-    PF: 'Puntos a favor',
-    PC: 'Puntos en contra',
-    SG: 'Sets ganados',
-    SP: 'Sets perdidos',
-    Dif: 'Diferencia: a favor menos en contra',
-    Pts: 'Puntos de la tabla',
-    JL: 'Juego limpio: puntos por tarjetas y sanciones. Menos puntos es mejor y desempata'
-  }
-
   var S = {}
   function esc(t) {
     return String(t).replace(/[&<>"]/g, function (c) {
@@ -230,51 +185,38 @@
   }
 
   /* —— modal —— */
-  function contador(eq, etiqueta, m, simple) {
-    var e = EQUIPOS.filter(function (x) {
-      return x.id === eq
+  function equipo(id) {
+    return EQUIPOS.filter(function (x) {
+      return x.id === id
     })[0]
+  }
+  function quienes(eq, m) {
+    var e = equipo(eq),
+      por = {},
+      orden = []
+    S.tarjetas.forEach(function (t) {
+      if (t.eq === eq && t.m === m) {
+        if (!por[t.j]) {
+          por[t.j] = 0
+          orden.push(t.j)
+        }
+        por[t.j]++
+      }
+    })
+    return orden
+      .map(function (j) {
+        return e.jugadores[j - 1] + (por[j] > 1 ? ' ×' + por[j] : '')
+      })
+      .join(', ')
+  }
+  /* Celda con contador − n +. Alto fijo: la lista de jugadores va en una sola línea con elipsis. */
+  function contador(eq, etiqueta, m, simple) {
+    var e = equipo(eq)
     var n = simple ? S.otras[eq + '|' + m] || 0 : cuenta(eq, m)
     var bloq = !editable()
-    var pls = []
-    if (!simple) {
-      var por = {}
-      S.tarjetas.forEach(function (t) {
-        if (t.eq === eq && t.m === m) por[t.j] = (por[t.j] || 0) + 1
-      })
-      Object.keys(por).forEach(function (j) {
-        pls.push('<li>' + esc(e.jugadores[j - 1]) + (por[j] > 1 ? ' ×' + por[j] : '') + '</li>')
-      })
-    }
-    var menu = ''
-    if (!simple && S.menu && S.menu.eq === eq && S.menu.m === m) {
-      menu =
-        '<ul class="dg-menu" role="menu">' +
-        e.jugadores
-          .map(function (nm, i) {
-            var x = expulsado(eq, i + 1)
-            return (
-              '<li role="none"><button class="dg-menu__item" role="menuitem" data-acc="asignar" data-eq="' +
-              eq +
-              '" data-m="' +
-              m +
-              '" data-j="' +
-              (i + 1) +
-              '"' +
-              (x ? ' disabled' : '') +
-              '>' +
-              (i + 1) +
-              ' · ' +
-              esc(nm) +
-              (x ? ' (expulsado)' : '') +
-              '</button></li>'
-            )
-          })
-          .join('') +
-        '</ul>'
-    }
+    var q = simple ? '' : quienes(eq, m)
     return (
-      '<td class="dg-celda"><div class="dg-cnt">' +
+      '<div class="dg-celda" role="cell"><div class="dg-cnt">' +
       ib(
         'minus',
         'Quitar ' + etiqueta + ' de ' + e.nombre,
@@ -291,20 +233,39 @@
         bloq
       ) +
       '</div>' +
-      menu +
-      (pls.length ? '<ul class="dg-quien">' + pls.join('') + '</ul>' : '') +
-      '</td>'
+      (simple ? '' : '<span class="dg-quien" title="' + esc(q) + '">' + esc(q) + '</span>') +
+      '</div>'
     )
   }
   function cabeza() {
     return (
-      '<thead><tr><th scope="col">Métrica</th>' +
+      '<div class="dg-fila dg-fila--cab" role="row"><div class="dg-rot" role="columnheader">Métrica</div>' +
       EQUIPOS.map(function (e) {
-        return '<th scope="col">' + esc(e.nombre) + ' – ' + e.depto + '</th>'
+        return (
+          '<div class="dg-th" role="columnheader" title="' +
+          esc(e.nombre + ' – ' + e.depto) +
+          '">' +
+          esc(e.nombre) +
+          ' – ' +
+          e.depto +
+          '</div>'
+        )
       }).join('') +
-      '</tr></thead>'
+      '</div>'
     )
   }
+  function fila(clase, rot, celdas) {
+    return (
+      '<div class="dg-fila ' +
+      clase +
+      '" role="row"><div class="dg-rot" role="rowheader">' +
+      rot +
+      '</div>' +
+      celdas +
+      '</div>'
+    )
+  }
+
   function modal() {
     var d = dep(),
       a = EQUIPOS[0],
@@ -359,77 +320,78 @@
         '<p class="dg-nota">Esta pestaña no cambia en este caso. El juego limpio se suma en Estadísticas.</p>'
     } else {
       cuerpo +=
-        '<h3 class="nwt-subtitle-font-bold dg-seccion">Estadísticas de juego</h3><div class="dg-scroll"><table class="dg-tabla">' +
+        '<h3 class="nwt-subtitle-font-bold dg-seccion">Estadísticas de juego</h3><div class="dg-grid" role="table" aria-label="Estadísticas de juego">' +
         cabeza() +
-        '<tbody>' +
         d.estadisticas
-          .map(function (s) {
-            return (
-              '<tr><th scope="row">' +
-              esc(s) +
-              '</th>' +
+          .map(function (st) {
+            return fila(
+              'dg-fila--est',
+              '<span class="dg-et">' + esc(st) + '</span>',
               EQUIPOS.map(function (e) {
-                return contador(e.id, s.toLowerCase(), s, true)
-              }).join('') +
-              '</tr>'
+                return contador(e.id, st.toLowerCase(), st, true)
+              }).join('')
             )
           })
           .join('') +
-        '</tbody></table></div>'
+        '</div>'
       cuerpo +=
-        '<h3 class="nwt-subtitle-font-bold dg-seccion">Incidencias</h3><div class="dg-scroll"><table class="dg-tabla">' +
+        '<h3 class="nwt-subtitle-font-bold dg-seccion">Incidencias</h3><div class="dg-grid" role="table" aria-label="Incidencias y juego limpio">' +
         cabeza() +
-        '<tbody>' +
         d.mediciones
           .map(function (m) {
-            var rot = esc(m.etiqueta) + ' ' + tag('JL +' + m.puntos)
-            var fila =
-              '<tr><th scope="row">' +
-              rot +
-              (m.estado !== 'si' ? '<span class="dg-nota">' + esc(m.nota) + '</span>' : '') +
-              '</th>'
+            var rot =
+              '<span class="dg-et">' +
+              esc(m.etiqueta) +
+              ' ' +
+              tag('JL +' + m.puntos) +
+              '</span>' +
+              (m.estado !== 'si'
+                ? '<span class="dg-sub" title="' + esc(m.nota) + '">' + esc(m.nota) + '</span>'
+                : '')
             if (m.estado !== 'si')
-              return (
-                fila +
-                '<td class="dg-celda dg-celda--off" colspan="2">' +
-                tag(
-                  m.estado === 'falta' ? 'Falta construir' : 'Por confirmar',
-                  m.estado === 'falta' ? 'warning' : 'neutral'
-                ) +
-                '</td></tr>'
+              return fila(
+                'dg-fila--inc',
+                rot,
+                '<div class="dg-celda dg-celda--off" role="cell">' +
+                  tag(
+                    m.estado === 'falta' ? 'Falta construir' : 'Por confirmar',
+                    m.estado === 'falta' ? 'warning' : 'neutral'
+                  ) +
+                  '</div>'
               )
             if (m.derivadaDe)
-              return (
-                fila +
+              return fila(
+                'dg-fila--inc',
+                rot,
                 EQUIPOS.map(function (e) {
                   return (
-                    '<td class="dg-celda"><span class="dg-val" role="status">' +
+                    '<div class="dg-celda" role="cell"><div class="dg-cnt dg-cnt--solo"><span class="dg-val" role="status">' +
                     dobles(e.id, m).length +
-                    '</span><span class="dg-nota">Se deriva de dos amarillas del mismo jugador</span></td>'
+                    '</span></div><span class="dg-quien">Deriva de dos amarillas</span></div>'
                   )
-                }).join('') +
-                '</tr>'
+                }).join('')
               )
-            return (
-              fila +
+            return fila(
+              'dg-fila--inc',
+              rot,
               EQUIPOS.map(function (e) {
                 return contador(e.id, m.etiqueta.toLowerCase(), m.id, false)
-              }).join('') +
-              '</tr>'
+              }).join('')
             )
           })
           .join('') +
-        '<tr class="dg-total"><th scope="row">' +
-        tag('JL') +
-        ' Juego limpio del partido</th>' +
-        EQUIPOS.map(function (e) {
-          return (
-            '<td class="dg-celda"><strong class="dg-jl" role="status" aria-live="polite">' +
-            total(e.id) +
-            '</strong><span class="dg-nota">Menos es mejor</span></td>'
-          )
-        }).join('') +
-        '</tr></tbody></table></div>'
+        fila(
+          'dg-fila--total',
+          '<span class="dg-et">' + tag('JL') + ' Juego limpio del partido</span>',
+          EQUIPOS.map(function (e) {
+            return (
+              '<div class="dg-celda" role="cell"><strong class="dg-jl" role="status" aria-live="polite">' +
+              total(e.id) +
+              '</strong><span class="dg-quien">Menos es mejor</span></div>'
+            )
+          }).join('')
+        ) +
+        '</div>'
     }
     var pie = ''
     if (S.estado === 'enCurso') pie += boton('Finalizar partido', 'finalizar')
@@ -456,123 +418,107 @@
     )
   }
 
-  /* —— página —— */
-  function tablaGrupo() {
-    var d = dep(),
-      T = TABLAS[d.tabla],
-      ult = T.cols.length
-    return (
-      '<section class="dg-card" aria-label="Resultados del grupo"><h2 class="nwt-subtitle-font-bold">Resultados · Grupo A</h2><div class="dg-scroll"><table class="dg-tabla dg-tabla--grupo"><thead><tr><th scope="col">#</th><th scope="col">Equipo</th><th scope="col" title="' +
-      esc(TIPS.JL) +
-      '">' +
-      tag('JL') +
-      '</th>' +
-      T.cols
-        .map(function (c) {
-          return '<th scope="col" title="' + esc(TIPS[c]) + '">' + c + '</th>'
-        })
-        .join('') +
-      '</tr></thead><tbody>' +
-      T.filas
-        .map(function (f, i) {
-          var nom = f[0],
-            jl =
-              f[f.length - 1] +
-              (EQUIPOS.filter(function (e) {
-                return e.nombre === nom
-              }).length
-                ? total(
-                    EQUIPOS.filter(function (e) {
-                      return e.nombre === nom
-                    })[0].id
-                  )
-                : 0)
+  /* —— página: solo el modal; si se cierra, queda un botón para abrirlo —— */
+  function pagina() {
+    if (S.modal) return modal()
+    return '<main class="dg-vacio">' + boton('Abrir estadísticas', 'abrir') + '</main>'
+  }
+
+  /* —— capa flotante: popover de jugadores y badge de feedback. Fuera del modal, así no empuja ni se repinta —— */
+  var fx = document.createElement('div')
+  fx.id = 'dg-fx'
+  document.body.appendChild(fx)
+  var pop = null
+
+  function cerrarPop(foco) {
+    if (!pop) return
+    var a = pop
+    pop.el.remove()
+    pop = null
+    var b = document.querySelector('[data-acc="mas|' + a.eq + '|' + a.m + '|0"]')
+    if (b) {
+      b.removeAttribute('aria-expanded')
+      if (foco) b.focus()
+    }
+  }
+  function abrirPop(btn, eq, m) {
+    cerrarPop()
+    var e = equipo(eq),
+      r = btn.getBoundingClientRect(),
+      el = document.createElement('div')
+    el.className = 'dg-pop'
+    el.setAttribute('role', 'menu')
+    el.setAttribute('aria-label', 'Jugador de ' + e.nombre)
+    el.innerHTML =
+      '<p class="dg-pop__tit">¿A qué jugador?</p>' +
+      e.jugadores
+        .map(function (nm, i) {
+          var x = expulsado(eq, i + 1)
           return (
-            '<tr><td>' +
+            '<button type="button" class="dg-pop__item" role="menuitem" data-acc="asignar" data-j="' +
             (i + 1) +
-            '</td><th scope="row">' +
-            esc(nom) +
-            '</th><td>' +
-            jl +
-            '</td>' +
-            f
-              .slice(1, f.length - 1)
-              .map(function (v, k) {
-                return '<td>' + (k === ult - 1 ? '<strong>' + v + '</strong>' : v) + '</td>'
-              })
-              .join('') +
-            '</tr>'
+            '"' +
+            (x ? ' disabled' : '') +
+            '><span>' +
+            (i + 1) +
+            ' · ' +
+            esc(nm) +
+            '</span>' +
+            (x ? '<small>expulsado</small>' : '') +
+            '</button>'
           )
         })
-        .join('') +
-      '</tbody></table></div><p class="dg-nota">JL va primero entre los datos. Se actualiza con las tarjetas del partido. Desempate: ' +
-      esc(d.desempate.toLowerCase()) +
-      '.</p></section>'
-    )
+        .join('')
+    fx.appendChild(el)
+    var w = el.offsetWidth,
+      h = el.offsetHeight
+    var left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8)
+    var top = r.bottom + 6
+    if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 6)
+    el.style.left = left + 'px'
+    el.style.top = top + 'px'
+    pop = { el: el, eq: eq, m: m, rect: r }
+    btn.setAttribute('aria-expanded', 'true')
+    var primero = el.querySelector('button:not(:disabled)')
+    if (primero) primero.focus()
   }
-  function pagina() {
-    var d = dep(),
-      a = EQUIPOS[0],
-      b = EQUIPOS[1]
-    var sel =
-      '<div class="nwt-tabs dg-deportes"><div class="nwt-tabs__list" role="tablist" aria-label="Deporte"><div class="nwt-tabs__divider"></div>' +
-      D.map(function (x) {
-        var act = x.id === S.deporte
-        return (
-          '<button class="nwt-tabs__tab' +
-          (act ? ' nwt-tabs__tab--active' : '') +
-          '" role="tab" aria-selected="' +
-          act +
-          '" data-acc="deporte|' +
-          x.id +
-          '"><span class="nwt-tabs__label"><span class="nwt-tabs__label-text">' +
-          esc(x.nombre) +
-          '</span></span>' +
-          (act ? '<div class="nwt-tabs__indicator"></div>' : '') +
-          '</button>'
-        )
-      }).join('') +
-      '</div></div>'
-    var h =
-      '<header class="dg-top"><span class="nwt-subtitle-font-bold">SUID · Digitación</span><span class="dg-rol">' +
-      tag(S.rol === 'coordinador' ? 'Coordinador' : 'Digitador', 'primary') +
-      '</span></header>'
-    h +=
-      '<main class="dg-main"><div><h1 class="nwt-h4-font">Juego limpio en la digitación</h1><p class="nwt-body-font-regular dg-sub">Elige un deporte para ver cómo se comporta el contador. Las tarjetas son de ejemplo.</p></div>' +
-      sel
-    h +=
-      '<section class="dg-card" aria-label="Partido"><div class="dg-partido"><div class="dg-lado">' +
-      avatar(a.nombre[0], 'primary') +
-      '<span><strong>' +
-      esc(a.nombre) +
-      '</strong><small>' +
-      a.depto +
-      '</small></span></div><div class="dg-marc">2 – 1</div><div class="dg-lado dg-lado--der">' +
-      avatar(b.nombre[0], 'secondary') +
-      '<span><strong>' +
-      esc(b.nombre) +
-      '</strong><small>' +
-      b.depto +
-      '</small></span></div></div>' +
-      '<div class="dg-acciones">' +
-      (S.estado === 'enCurso'
-        ? tag('EN JUEGO', 'informative')
-        : tag(
-            S.estado === 'corrigiendo' ? 'CORRIGIENDO' : 'FINALIZADO',
-            S.estado === 'corrigiendo' ? 'warning' : 'positive'
-          )) +
-      boton('Estadísticas', 'abrir', { v: 'quiet' }) +
-      '</div></section>'
-    h += tablaGrupo() + '</main>'
-    return h + (S.modal ? modal() : '')
+  /* Badge que sube y se desvanece junto al botón: +N JL (peor) o −N JL (mejor). */
+  function flotar(r, delta) {
+    if (!delta) return
+    var el = document.createElement('span'),
+      tema = delta > 0 ? 'negative' : 'positive'
+    el.className = 'dg-flota'
+    el.setAttribute('aria-hidden', 'true')
+    el.innerHTML =
+      '<span class="nwt-tag" nwt-theme="' +
+      tema +
+      '" nwt-size="small">' +
+      (delta > 0 ? '+' : '−') +
+      Math.abs(delta) +
+      ' JL</span>'
+    el.style.left = r.left + r.width / 2 + 'px'
+    el.style.top = r.top + 'px'
+    fx.appendChild(el)
+    el.addEventListener('animationend', function () {
+      el.remove()
+    })
+    /* Respaldo: si el navegador no corre la animación (pestaña en segundo plano), no queda colgado */
+    setTimeout(function () {
+      el.remove()
+    }, 1400)
   }
 
   function pintar() {
+    cerrarPop()
     var f =
       document.activeElement &&
       document.activeElement.getAttribute &&
       document.activeElement.getAttribute('data-acc')
+    var c = document.querySelector('.nwt-modal__component'),
+      st = c ? c.scrollTop : 0
     document.getElementById('app').innerHTML = pagina()
+    var c2 = document.querySelector('.nwt-modal__component')
+    if (c2) c2.scrollTop = st
     if (f) {
       var n = document.querySelector('[data-acc="' + f + '"]')
       if (n && !n.disabled) n.focus()
@@ -580,50 +526,83 @@
   }
 
   document.addEventListener('click', function (ev) {
+    if (pop && !ev.target.closest('.dg-pop') && !ev.target.closest('[data-acc^="mas|"]')) cerrarPop()
     var n = ev.target.closest('[data-acc]')
     if (!n || n.disabled) return
     var p = n.getAttribute('data-acc').split('|'),
       a = p[0]
-    if (a === 'deporte') {
-      S.deporte = p[1]
-      S.tarjetas = semilla(dep())
-      S.otras = {}
-      S.menu = null
-      S.estado = 'enCurso'
-    } else if (a === 'tab') S.tab = p[1]
-    else if (a === 'abrir') S.modal = true
-    else if (a === 'cerrar') {
-      S.modal = false
-      S.menu = null
-    } else if (a === 'corregir') S.estado = 'corrigiendo'
-    else if (a === 'finalizar') {
-      S.estado = 'finalizado'
-      S.menu = null
-    } else if (a === 'guardar') {
-      S.estado = 'finalizado'
-      S.menu = null
-    } else if (a === 'mas') {
-      if (p[3] === '1') S.otras[p[1] + '|' + p[2]] = (S.otras[p[1] + '|' + p[2]] || 0) + 1
-      else S.menu = S.menu && S.menu.eq === p[1] && S.menu.m === p[2] ? null : { eq: p[1], m: p[2] }
-    } else if (a === 'quitar') {
+    if (a === 'mas' && p[3] !== '1') {
+      if (pop && pop.eq === p[1] && pop.m === p[2]) cerrarPop(true)
+      else abrirPop(n, p[1], p[2])
+      return
+    }
+    if (a === 'asignar') {
+      if (!pop) return
+      var eq = pop.eq,
+        m = pop.m,
+        r = pop.rect,
+        antes = total(eq)
+      S.tarjetas.push({ id: Date.now(), eq: eq, j: +n.getAttribute('data-j'), m: m })
+      var delta = total(eq) - antes
+      cerrarPop()
+      pintar()
+      var b = document.querySelector('[data-acc="mas|' + eq + '|' + m + '|0"]')
+      if (b) b.focus()
+      flotar(r, delta)
+      return
+    }
+    if (a === 'quitar') {
+      var r2 = n.getBoundingClientRect(),
+        eq2 = p[1],
+        antes2 = total(eq2)
       if (p[3] === '1') S.otras[p[1] + '|' + p[2]] = Math.max(0, (S.otras[p[1] + '|' + p[2]] || 0) - 1)
-      else {
+      else
         for (var i = S.tarjetas.length - 1; i >= 0; i--)
           if (S.tarjetas[i].eq === p[1] && S.tarjetas[i].m === p[2]) {
             S.tarjetas.splice(i, 1)
             break
           }
-      }
-    } else if (a === 'asignar') {
-      S.tarjetas.push({
-        id: Date.now(),
-        eq: n.getAttribute('data-eq'),
-        j: +n.getAttribute('data-j'),
-        m: n.getAttribute('data-m')
-      })
-      S.menu = null
+      var d2 = total(eq2) - antes2
+      pintar()
+      flotar(r2, d2)
+      return
     }
+    if (a === 'mas') S.otras[p[1] + '|' + p[2]] = (S.otras[p[1] + '|' + p[2]] || 0) + 1
+    else if (a === 'deporte') {
+      S.deporte = p[1]
+      S.tarjetas = semilla(dep())
+      S.otras = {}
+      S.estado = 'enCurso'
+    } else if (a === 'tab') S.tab = p[1]
+    else if (a === 'abrir') S.modal = true
+    else if (a === 'cerrar') S.modal = false
+    else if (a === 'corregir') S.estado = 'corrigiendo'
+    else if (a === 'finalizar') S.estado = 'finalizado'
+    else if (a === 'guardar') S.estado = 'finalizado'
     pintar()
+  })
+
+  document.addEventListener('keydown', function (ev) {
+    if (!pop) return
+    if (ev.key === 'Escape') {
+      ev.preventDefault()
+      cerrarPop(true)
+    } else if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+      ev.preventDefault()
+      var its = [].slice.call(pop.el.querySelectorAll('button:not(:disabled)')),
+        i = its.indexOf(document.activeElement)
+      its[(i + (ev.key === 'ArrowDown' ? 1 : -1) + its.length) % its.length].focus()
+    } else if (ev.key === 'Tab') cerrarPop()
+  })
+  document.addEventListener(
+    'scroll',
+    function () {
+      cerrarPop()
+    },
+    true
+  )
+  window.addEventListener('resize', function () {
+    cerrarPop()
   })
 
   window.DEMO = {
