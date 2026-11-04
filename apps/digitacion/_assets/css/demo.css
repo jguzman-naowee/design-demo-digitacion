@@ -284,11 +284,23 @@ body {
   position: fixed;
   transform: translate(-50%, -100%);
   pointer-events: none;
-  animation: dg-sube 1s ease-out forwards;
+  animation: dg-sube 1.8s ease-out forwards;
 }
-.dg-flota .nwt-tag {
-  font-weight: 700;
-  box-shadow: 0 2px 8px rgb(31 31 43 / 18%);
+/* 1,5 veces el tamaño de un tag pequeño: texto, relleno y sombra */
+/* Exactamente 1,5 veces el tag pequeño del SDK (10px, 24px de alto, 6px de relleno, 8px de radio) */
+.dg-flota__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 9px;
+  border-radius: 12px;
+  background: #dbeafe;
+  color: #1e3a8a;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 3px 12px rgb(30 58 138 / 22%);
 }
 @keyframes dg-sube {
   0% {
@@ -313,7 +325,19 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .dg-flota {
-    animation: dg-desvanece 0.8s ease-out forwards;
+    animation: dg-desvanece 1.4s ease-out forwards;
     transform: translate(-50%, -140%);
   }
+}
+
+/* Comentarios DC-001 y DC-003: la X y las pestañas Marcador y Descalificaciones no hacen nada */
+.dg-inerte,
+.dg-tab-inerte {
+  pointer-events: none;
+  cursor: default;
+}
+.dg-explica {
+  margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+  color: #646587;
 }

@@ -279,15 +279,16 @@
       '<div class="nwt-tabs"><div class="nwt-tabs__list" role="tablist"><div class="nwt-tabs__divider"></div>' +
       tabs
         .map(function (t) {
-          var act = S.tab === t[0]
+          var act = t[0] === 'statistics'
           return (
-            '<button class="nwt-tabs__tab' +
+            '<button class="nwt-tabs__tab dg-tab-inerte' +
             (act ? ' nwt-tabs__tab--active' : '') +
             '" role="tab" aria-selected="' +
             act +
-            '" data-acc="tab|' +
-            t[0] +
-            '"><span class="nwt-tabs__label"><span class="nwt-tabs__label-text">' +
+            '" aria-disabled="' +
+            !act +
+            '" tabindex="-1" type="button">' +
+            '<span class="nwt-tabs__label"><span class="nwt-tabs__label-text">' +
             t[1] +
             '</span></span>' +
             (act ? '<div class="nwt-tabs__indicator"></div>' : '') +
@@ -315,10 +316,7 @@
         'warning',
         'info-circle'
       )
-    if (S.tab !== 'statistics') {
-      cuerpo +=
-        '<p class="dg-nota">Esta pestaña no cambia en este caso. El juego limpio se suma en Estadísticas.</p>'
-    } else {
+    {
       cuerpo +=
         '<h3 class="nwt-subtitle-font-bold dg-seccion">Estadísticas de juego</h3><div class="dg-grid" role="table" aria-label="Estadísticas de juego">' +
         cabeza() +
@@ -380,9 +378,17 @@
             )
           })
           .join('') +
+        '</div>' +
+        '<h3 class="nwt-subtitle-font-bold dg-seccion">Juego limpio</h3>' +
+        '<p class="dg-explica">Suma los puntos de las mediciones de la tabla de ' +
+        esc(d.nombre) +
+        '. Gana el criterio quien acumula menos puntos. Cuenta solo en esta fase (Fase de grupos · Grupo A) y no se acumula a la siguiente. En el desempate: ' +
+        esc(d.desempate.toLowerCase()) +
+        '.</p><div class="dg-grid" role="table" aria-label="Juego limpio del partido">' +
+        cabeza() +
         fila(
           'dg-fila--total',
-          '<span class="dg-et">' + tag('JL') + ' Juego limpio del partido</span>',
+          '<span class="dg-et">' + tag('JL') + ' Total del partido</span>',
           EQUIPOS.map(function (e) {
             return (
               '<div class="dg-celda" role="cell"><strong class="dg-jl" role="status" aria-live="polite">' +
@@ -398,7 +404,6 @@
     else if (S.estado === 'corrigiendo') pie += boton('Guardar corrección', 'guardar')
     else if (S.rol === 'coordinador')
       pie += boton('Corregir resultado', 'corregir', { v: 'quiet', ico: 'edit' })
-    pie += boton('Cerrar', 'cerrar', { v: 'mute' })
     return (
       '<div class="nwt-modal nwt-modal--visible dg-modal"><div class="nwt-modal__content"><div class="nwt-modal__header"><div class="nwt-modal__header__description"><span class="nwt-subtitle-font-bold">Juegos Intercolegiados 2026 – ' +
       esc(d.nombre) +
@@ -406,7 +411,7 @@
       esc(a.nombre) +
       ' vs ' +
       esc(b.nombre) +
-      '</span></div><span class="nwt-modal__close" data-acc="cerrar">' +
+      '</span></div><span class="nwt-modal__close dg-inerte" aria-hidden="true">' +
       icono('close') +
       '</span></div><div class="nwt-modal__component">' +
       h +
@@ -414,7 +419,7 @@
       cuerpo +
       '</div><div class="dg-pie">' +
       pie +
-      '</div></div></div><div class="nwt-modal__backdrop" data-acc="cerrar"></div></div>'
+      '</div></div></div><div class="nwt-modal__backdrop"></div></div>'
     )
   }
 
@@ -485,17 +490,10 @@
   /* Badge que sube y se desvanece junto al botón: +N JL (peor) o −N JL (mejor). */
   function flotar(r, delta) {
     if (!delta) return
-    var el = document.createElement('span'),
-      tema = delta > 0 ? 'negative' : 'positive'
+    var el = document.createElement('span')
     el.className = 'dg-flota'
     el.setAttribute('aria-hidden', 'true')
-    el.innerHTML =
-      '<span class="nwt-tag" nwt-theme="' +
-      tema +
-      '" nwt-size="small">' +
-      (delta > 0 ? '+' : '−') +
-      Math.abs(delta) +
-      ' JL</span>'
+    el.innerHTML = '<span class="dg-flota__tag">' + (delta > 0 ? '+' : '−') + Math.abs(delta) + ' JL</span>'
     el.style.left = r.left + r.width / 2 + 'px'
     el.style.top = r.top + 'px'
     fx.appendChild(el)
@@ -505,7 +503,7 @@
     /* Respaldo: si el navegador no corre la animación (pestaña en segundo plano), no queda colgado */
     setTimeout(function () {
       el.remove()
-    }, 1400)
+    }, 2400)
   }
 
   function pintar() {

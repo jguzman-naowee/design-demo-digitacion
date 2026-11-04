@@ -1,0 +1,58 @@
+/* Generado por scripts/registrar.mjs: no editar a mano. */
+window.APPS = [
+  {
+    "id": "digitacion",
+    "nombre": "Digitación · Juego limpio",
+    "inicio": "index.html",
+    "rolParam": "rol",
+    "escenarioParam": "deporte",
+    "escenarioInicial": "futbol",
+    "rolInicial": "coordinador",
+    "roles": [
+      {
+        "id": "digitador",
+        "etiqueta": "Digitador",
+        "ini": "DI",
+        "tag": "MESA",
+        "desc": "Anota el partido en curso. Si ya está finalizado, solo lo ve."
+      },
+      {
+        "id": "coordinador",
+        "etiqueta": "Coordinador",
+        "ini": "CO",
+        "tag": "JIN",
+        "desc": "Además de anotar, puede corregir el resultado de un partido finalizado."
+      }
+    ],
+    "escenarios": [
+      {
+        "valor": "futbol",
+        "etiqueta": "Fútbol"
+      },
+      {
+        "valor": "futbol-sala",
+        "etiqueta": "Fútbol sala"
+      },
+      {
+        "valor": "futbol-salon",
+        "etiqueta": "Fútbol de salón"
+      },
+      {
+        "valor": "baloncesto",
+        "etiqueta": "Baloncesto"
+      },
+      {
+        "valor": "baloncesto-3x3",
+        "etiqueta": "Baloncesto 3x3"
+      },
+      {
+        "valor": "balonmano",
+        "etiqueta": "Balonmano"
+      },
+      {
+        "valor": "voleibol",
+        "etiqueta": "Voleibol"
+      }
+    ]
+  }
+];
