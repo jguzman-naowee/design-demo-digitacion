@@ -12,6 +12,8 @@ La portada es el marco de demos (el de `design-layouts-demos/web`): el diseño a
 - **Ver como:** digitador (anota el partido en curso) o coordinador (además puede corregir el resultado).
 - **Restablecer datos** de la demo.
 
+- **Historias de usuario:** el panel lista las notas de la HU de cada deporte; al tocar una, la demo lleva a su fila. Cada incidencia y el juego limpio tienen un icono de info con el detalle del dato.
+
 El modal de anotación no se cierra. Las pestañas Marcador y Descalificaciones no son accionables.
 
 ## Caso: juego limpio (PROD-39, JIN 2026)

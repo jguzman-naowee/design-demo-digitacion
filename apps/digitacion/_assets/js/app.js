@@ -210,7 +210,7 @@
     })
   }
   /* Jugadores como chips que se acomodan en dos líneas; si son más de cuatro, tres y «+N». Alto fijo. */
-  function chips(lista) {
+  function chips(lista, eq, m) {
     var todos = lista
       .map(function (x) {
         return x.nombre + (x.n > 1 ? ' ×' + x.n : '')
@@ -228,7 +228,10 @@
         )
       })
       .join('')
-    if (lista.length > 4) h += '<li class="dg-chip dg-chip--mas"><b>+' + (lista.length - 3) + '</b></li>'
+    if (lista.length > 4)
+      h +=
+        '<li class="dg-chip dg-chip--mas"><button type="button" class="dg-chip__btn" data-acc="lista|' +
+        eq + '|' + m + '" aria-label="Ver quién tiene cuántas">+' + (lista.length - 3) + '</button></li>'
     return (
       '<ul class="dg-chips" aria-label="Jugadores: ' +
       esc(todos) +
@@ -244,7 +247,7 @@
     var e = equipo(eq)
     var n = simple ? S.otras[eq + '|' + m] || 0 : cuenta(eq, m)
     var bloq = !editable()
-    var q = simple ? '' : chips(quienes(eq, m))
+    var q = simple ? '' : chips(quienes(eq, m), eq, m)
     return (
       '<div class="dg-celda" role="cell"><div class="dg-cnt">' +
       ib(
@@ -275,20 +278,23 @@
           '<div class="dg-th" role="columnheader" title="' +
           esc(e.nombre + ' – ' + e.depto) +
           '">' +
+          '<b class="dg-th__n">' +
           esc(e.nombre) +
-          ' – ' +
-          e.depto +
-          '</div>'
+          '</b><span class="dg-th__d">' +
+          esc(e.depto) +
+          '</span></div>'
         )
       }).join('') +
       '</div>'
     )
   }
-  function fila(clase, rot, celdas) {
+  function fila(clase, rot, celdas, hu) {
     return (
       '<div class="dg-fila ' +
       clase +
-      '" role="row"><div class="dg-rot" role="rowheader">' +
+      '"' +
+      (hu ? ' data-hu="' + hu + '"' : '') +
+      ' role="row"><div class="dg-rot" role="rowheader">' +
       rot +
       '</div>' +
       celdas +
@@ -348,7 +354,7 @@
       )
     {
       cuerpo +=
-        '<h3 class="nwt-subtitle-font-bold dg-seccion">Estadísticas de juego</h3><div class="dg-grid" role="table" aria-label="Estadísticas de juego">' +
+        '<h3 class="nwt-subtitle-font-bold dg-seccion" data-hu="est">Estadísticas de juego</h3><div class="dg-grid" role="table" aria-label="Estadísticas de juego">' +
         cabeza() +
         d.estadisticas
           .map(function (st) {
@@ -363,7 +369,7 @@
           .join('') +
         '</div>'
       cuerpo +=
-        '<h3 class="nwt-subtitle-font-bold dg-seccion">Incidencias</h3><div class="dg-grid" role="table" aria-label="Incidencias y juego limpio">' +
+        '<h3 class="nwt-subtitle-font-bold dg-seccion" data-hu="inc">Incidencias</h3><div class="dg-grid" role="table" aria-label="Incidencias y juego limpio">' +
         cabeza() +
         d.mediciones
           .map(function (m) {
@@ -371,21 +377,23 @@
             var rot =
               '<span class="dg-et">' +
               esc(m.etiqueta) +
-              '</span>' +
-              '<span class="dg-sub" title="' +
+              '</span><span class="dg-subfila"><span class="dg-sub" title="' +
               esc(jl + (m.estado !== 'si' ? ' · ' + m.nota : '')) +
               '"><span class="dg-jl-txt">' +
               jl +
               '</span>' +
               (m.estado !== 'si' ? ' · ' + esc(m.nota) : '') +
-              '</span>'
+              '</span><span class="dg-info">' +
+              ib('info-circle', 'Detalle de la HU: ' + m.etiqueta, 'info|' + m.id) +
+              '</span></span>'
             if (m.estado !== 'si')
               return fila(
                 'dg-fila--inc',
                 rot,
                 '<div class="dg-celda dg-celda--off" role="cell">' +
                   tag('Falta construir', 'warning') +
-                  '</div>'
+                  '</div>',
+                'med-' + m.id
               )
             if (m.derivadaDe)
               return fila(
@@ -397,35 +405,48 @@
                     dobles(e.id, m).length +
                     '</span></div><span class="dg-quien">Deriva de dos amarillas</span></div>'
                   )
-                }).join('')
+                }).join(''),
+                'med-' + m.id
               )
             return fila(
               'dg-fila--inc',
               rot,
               EQUIPOS.map(function (e) {
                 return contador(e.id, m.etiqueta.toLowerCase(), m.id, false)
-              }).join('')
+              }).join(''),
+              'med-' + m.id
             )
           })
           .join('') +
         '</div>' +
-        '<h3 class="nwt-subtitle-font-bold dg-seccion">Juego limpio</h3>' +
-        '<p class="dg-explica">Suma los puntos de las mediciones de la tabla de ' +
-        esc(d.nombre) +
-        '. Gana el criterio quien acumula menos puntos. Cuenta solo en esta fase (Fase de grupos · Grupo A) y no se acumula a la siguiente. En el desempate: ' +
-        esc(d.desempate.toLowerCase()) +
-        '.</p><div class="dg-grid" role="table" aria-label="Juego limpio del partido">' +
+        '<h3 class="nwt-subtitle-font-bold dg-seccion dg-seccion--info" data-hu="jl">Juego limpio<span class="dg-info dg-tip" data-tip="' +
+        esc(
+          'Suma los puntos de las mediciones de la tabla de ' +
+            d.nombre +
+            '. Gana el criterio quien acumula menos puntos. Cuenta solo en esta fase (Fase de grupos · Grupo A) y no se acumula a la siguiente. En el desempate: ' +
+            d.desempate.toLowerCase() +
+            '.'
+        ) +
+        '">' +
+        ib('info-circle', 'Detalle de la HU: juego limpio', 'info|jl') +
+        '</span></h3><div class="dg-grid" role="table" aria-label="Juego limpio del partido">' +
         cabeza() +
         fila(
           'dg-fila--total',
-          '<span class="dg-et">' + tag('JL') + ' Total del partido</span>',
+          '<span class="dg-et">Total del partido</span>' + tag('Menos es mejor'),
           EQUIPOS.map(function (e) {
+            var mio = total(e.id),
+              otro = total(e.id === EQUIPOS[0].id ? EQUIPOS[1].id : EQUIPOS[0].id)
+            var res = mio < otro ? 'gana' : mio > otro ? 'pierde' : 'empate'
             return (
-              '<div class="dg-celda" role="cell"><strong class="dg-jl" role="status" aria-live="polite">' +
-              total(e.id) +
-              '</strong><span class="dg-quien">Menos es mejor</span></div>'
+              '<div class="dg-celda" role="cell"><strong class="dg-jl dg-jl--' +
+              res +
+              '" role="status" aria-live="polite">' +
+              mio +
+              '</strong></div>'
             )
-          }).join('')
+          }).join(''),
+          'total'
         ) +
         '</div>'
     }
@@ -524,6 +545,36 @@
     var primero = el.querySelector('button:not(:disabled)')
     if (primero) primero.focus()
   }
+  /* Popover del «+N»: quién tiene cuántas de esa medición */
+  function abrirLista(btn, eq, m) {
+    cerrarPop()
+    var e = equipo(eq),
+      r = btn.getBoundingClientRect(),
+      el = document.createElement('div'),
+      med = dep().mediciones.filter(function (x) {
+        return x.id === m
+      })[0],
+      lista = quienes(eq, m)
+    el.className = 'dg-pop'
+    el.setAttribute('role', 'dialog')
+    el.setAttribute('aria-label', med.etiqueta + ' de ' + e.nombre)
+    el.innerHTML =
+      '<p class="dg-pop__tit">' + esc(med.etiqueta) + ' · ' + cuenta(eq, m) + ' en total</p>' +
+      lista
+        .map(function (x) {
+          return '<div class="dg-pop__item dg-pop__item--lista"><span>' + esc(x.nombre) + '</span><b>×' + x.n + '</b></div>'
+        })
+        .join('')
+    fx.appendChild(el)
+    var w = el.offsetWidth,
+      h = el.offsetHeight
+    var left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8)
+    var top = r.bottom + 6
+    if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 6)
+    el.style.left = left + 'px'
+    el.style.top = top + 'px'
+    pop = { el: el, eq: eq, m: m, rect: r, lista: true }
+  }
   /* Badge que sube y se desvanece junto al botón: +N JL (peor) o −N JL (mejor). */
   function flotar(r, delta) {
     if (!delta) return
@@ -543,6 +594,111 @@
     }, 2400)
   }
 
+
+  /* —— capa de HU: notas por deporte que llevan al elemento + detalle de la HU en un modal (sin tour) —— */
+  var huEl = document.createElement('div')
+  huEl.id = 'dg-hu'
+  document.body.appendChild(huEl)
+  var huInfo = null
+  function nuevas(d) {
+    return d.mediciones.filter(function (m) {
+      return m.nuevo
+    })
+  }
+  function notas() {
+    var d = dep(),
+      n = [],
+      exp = d.mediciones.filter(function (m) {
+        return m.expulsa
+      }),
+      der = d.mediciones.filter(function (m) {
+        return m.derivadaDe
+      })[0],
+      tec = d.mediciones.filter(function (m) {
+        return m.tecnico
+      })
+    n.push({ hu: 'DIG-CT-01', id: 'jl', t: 'El contador solo suma lo de su deporte', d: 'El total de juego limpio de ' + d.nombre + ' suma únicamente las ' + d.mediciones.length + ' mediciones de su tabla.' })
+    n.push({ hu: 'PROD-39', id: 'jl-regla', t: 'Gana quien suma menos', d: 'Cuenta solo en esta fase y no se acumula a la siguiente. Desempate: ' + d.desempate.toLowerCase() + '.' })
+    n.push({ hu: 'PROD-39', id: 'inc', t: 'Cada incidencia aporta puntos JL', d: d.mediciones.map(function (m) { return m.etiqueta + ' (+' + m.puntos + ')' }).join(' · ') })
+    if (der) n.push({ hu: 'PROD-39', id: 'med-' + der.id, t: 'La doble amarilla se deriva sola', d: 'Dos amarillas al mismo jugador generan la roja por doble amarilla; no se digita a mano.' })
+    if (exp.length) n.push({ hu: 'PROD-39', id: 'med-' + exp[0].id, t: 'Quien se expulsa queda desactivado', d: 'Las mediciones que expulsan (' + exp.length + ') bloquean al jugador en el selector.' })
+    if (tec.length) n.push({ hu: 'PROD-39', id: 'med-' + tec[0].id, t: 'El cuerpo técnico tiene su propia lista', d: 'Se atribuye a Entrenador o Asistente, no a un jugador.' })
+    nuevas(d).forEach(function (m) {
+      n.push({ hu: 'Pendiente', id: 'med-' + m.id, t: m.etiqueta + ': aún no existe', d: 'La demo la muestra como será. En la digitación real todavía no se puede registrar (César Meneses, 2026-11-04).' })
+    })
+    n.push({ hu: 'Roles', id: 'modal', t: 'Quién puede corregir', d: 'El digitador anota el partido en curso. Un partido finalizado solo lo corrige el coordinador.' })
+    return n
+  }
+  function detalle(id) {
+    var d = dep()
+    if (id === 'jl')
+      return {
+        t: 'Juego limpio · ' + d.nombre,
+        f: [
+          ['Regla', 'Suma los puntos de la tabla de ' + d.nombre + '; gana quien acumula menos.'],
+          ['Alcance', 'Solo la fase actual; no se acumula a la siguiente.'],
+          ['Desempate', d.desempate],
+          ['Mediciones', d.mediciones.length + ' en la tabla (' + d.tabla + ')'],
+          ['Reglamento', 'Reglamentos 2026 de los Juegos Intercolegiados']
+        ]
+      }
+    var m = d.mediciones.filter(function (x) { return 'med-' + x.id === id || x.id === id })[0]
+    if (!m) return null
+    return {
+      t: m.etiqueta,
+      f: [
+        ['Deporte', d.nombre],
+        ['Puntos JL', '+' + m.puntos + ' por cada una'],
+        ['Se atribuye a', m.tecnico ? 'Cuerpo técnico (Entrenador o Asistente)' : 'Jugador'],
+        ['Efecto', m.expulsa ? 'Expulsa: queda desactivado en el selector' : 'Solo suma puntos'],
+        ['Origen', m.derivadaDe ? 'Derivada: dos amarillas al mismo jugador' : 'Se digita'],
+      ].concat(m.nuevo ? [['En la digitación real', 'Aún no existe (César Meneses, 2026-11-04)']] : [])
+    }
+  }
+  /* Las notas viven en el panel de Configuraciones del marco: se las manda y él avisa cuál se tocó */
+  function enviarNotas() {
+    try {
+      parent.postMessage({ type: 'demo-hu', notas: notas() }, '*')
+    } catch (x) {
+      /* sin marco */
+    }
+  }
+  window.addEventListener('message', function (e) {
+    if (e.data && e.data.demo === 'hu-ir') ir(e.data.id)
+  })
+  function pintarHu() {
+    var h = ''
+    if (huInfo) {
+      var i = detalle(huInfo)
+      if (i)
+        h +=
+          '<div class="dg-hu-ov" data-acc="cerrarinfo"><div class="dg-hu-dlg" role="dialog" aria-modal="true" aria-label="' + esc(i.t) + '"><div class="dg-hu-cab"><strong>' + esc(i.t) +
+          '</strong><button type="button" class="dg-hu-x" data-acc="cerrarinfo" aria-label="Cerrar">×</button></div><dl>' +
+          i.f.map(function (f) { return '<dt>' + esc(f[0]) + '</dt><dd>' + esc(f[1]) + '</dd>' }).join('') + '</dl></div></div>'
+    }
+    huEl.innerHTML = h
+    enviarNotas()
+  }
+  function ir(id) {
+    var t = document.querySelector('[data-hu="' + id + '"]')
+    if (!t) return
+    t.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    t.classList.remove('dg-hu-pulso')
+    void t.offsetWidth
+    t.classList.add('dg-hu-pulso')
+    setTimeout(function () { t.classList.remove('dg-hu-pulso') }, 2200)
+  }
+  huEl.addEventListener('click', function (ev) {
+    var n = ev.target.closest('[data-acc]')
+    if (!n) return
+    var p = n.getAttribute('data-acc').split('|')
+    if (p[0] === 'cerrarinfo') {
+      if (n.classList.contains('dg-hu-ov') && ev.target !== n) return
+      huInfo = null
+    }
+    pintarHu()
+  })
+
   function pintar() {
     cerrarPop()
     var f =
@@ -552,6 +708,7 @@
     var c = document.querySelector('.nwt-modal__component'),
       st = c ? c.scrollTop : 0
     document.getElementById('app').innerHTML = pagina()
+    pintarHu()
     var c2 = document.querySelector('.nwt-modal__component')
     if (c2) c2.scrollTop = st
     if (f) {
@@ -561,11 +718,22 @@
   }
 
   document.addEventListener('click', function (ev) {
-    if (pop && !ev.target.closest('.dg-pop') && !ev.target.closest('[data-acc^="mas|"]')) cerrarPop()
+    if (ev.target.closest('#dg-hu')) return
+    if (pop && !ev.target.closest('.dg-pop') && !ev.target.closest('[data-acc^="mas|"]') && !ev.target.closest('[data-acc^="lista|"]')) cerrarPop()
     var n = ev.target.closest('[data-acc]')
     if (!n || n.disabled) return
     var p = n.getAttribute('data-acc').split('|'),
       a = p[0]
+    if (a === 'info') {
+      huInfo = p[1]
+      pintarHu()
+      return
+    }
+    if (a === 'lista') {
+      if (pop && pop.lista && pop.eq === p[1] && pop.m === p[2]) cerrarPop()
+      else abrirLista(n, p[1], p[2])
+      return
+    }
     if (a === 'mas' && p[3] !== '1') {
       if (pop && pop.eq === p[1] && pop.m === p[2]) cerrarPop(true)
       else abrirPop(n, p[1], p[2])
@@ -618,6 +786,11 @@
   })
 
   document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && huInfo) {
+      huInfo = null
+      pintarHu()
+      return
+    }
     if (!pop) return
     if (ev.key === 'Escape') {
       ev.preventDefault()
@@ -626,6 +799,7 @@
       ev.preventDefault()
       var its = [].slice.call(pop.el.querySelectorAll('button:not(:disabled)')),
         i = its.indexOf(document.activeElement)
+      if (!its.length) return
       its[(i + (ev.key === 'ArrowDown' ? 1 : -1) + its.length) % its.length].focus()
     } else if (ev.key === 'Tab') cerrarPop()
   })

@@ -26,6 +26,7 @@ const futbol = (azul) => [
     estado: 'si',
     etiqueta: 'Expulsión de cuerpo técnico',
     tecnico: true,
+    nuevo: true,
     expulsa: true,
     id: 'tecnico',
     puntos: 80
@@ -82,6 +83,7 @@ const DEPORTES = [
         estado: 'si',
         etiqueta: 'Descalificación de cuerpo técnico',
         tecnico: true,
+        nuevo: true,
         expulsa: true,
         id: 'tecnico',
         puntos: 80
@@ -89,6 +91,7 @@ const DEPORTES = [
       {
         estado: 'si',
         etiqueta: 'Conducta violenta o terminación del encuentro',
+        nuevo: true,
         id: 'agresion',
         puntos: 100
       }
@@ -113,6 +116,7 @@ const DEPORTES = [
       {
         estado: 'si',
         etiqueta: 'Conducta violenta o terminación del encuentro',
+        nuevo: true,
         id: 'agresion',
         puntos: 100
       }
@@ -144,6 +148,7 @@ const DEPORTES = [
         estado: 'si',
         etiqueta: 'Tarjeta amarilla de cuerpo técnico',
         tecnico: true,
+        nuevo: true,
         id: 'amarillaTecnico',
         puntos: 60
       },
@@ -151,6 +156,7 @@ const DEPORTES = [
         estado: 'si',
         etiqueta: 'Descalificación de cuerpo técnico',
         tecnico: true,
+        nuevo: true,
         expulsa: true,
         id: 'tecnico',
         puntos: 100
