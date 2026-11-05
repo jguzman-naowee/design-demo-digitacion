@@ -26,7 +26,7 @@
       return '<button type="button" class="tt-role' + (on ? " is-active" : "") + '" data-r="' + esc(r.id) + '" title="' + esc(r.desc || "") + '" aria-pressed="' + on + '">' + esc(r.etiqueta) + "</button>";
     }).join("");
     $("gEsc").hidden = !(app.escenarios || []).length;
-    $("segEsc").innerHTML = (app.escenarios || []).map((e) => { const on = e.valor === esc2; return '<button type="button" data-h="' + esc(e.valor) + '" class="' + (on ? "is-active" : "") + '" aria-pressed="' + on + '">' + esc(e.etiqueta) + "</button>"; }).join("");
+    $("segEsc").innerHTML = '<label class="sr" for="escSel">Escenario</label><select id="escSel" class="tt-sel">' + (app.escenarios || []).map((e) => '<option value="' + esc(e.valor) + '"' + (e.valor === esc2 ? " selected" : "") + ">" + esc(e.etiqueta) + "</option>").join("") + "</select>";
     $("solo").href = url();
     const r = roles().find((x) => x.id === rol);
     document.title = (r ? r.etiqueta + " · " : "") + (app.nombre || app.id) + " · Demo web";
@@ -35,7 +35,7 @@
     if (esc2) p.set("esc", esc2);
     try { history.replaceState(null, "", "?" + p + hash); } catch (e) { /* sin historial */ }
   }
-  const cargar = () => { frame.src = url(); pintar(); };
+  const cargar = () => { $("gHu").hidden = true; frame.src = url(); pintar(); };
 
   function abrir(on) {
     panel.classList.toggle("open", on); document.body.classList.toggle("tt-open", on);
@@ -44,6 +44,8 @@
   }
 
   panel.addEventListener("click", (e) => {
+    const hu = e.target.closest("[data-hu]");
+    if (hu) { try { frame.contentWindow.postMessage({ demo: "hu-ir", id: hu.dataset.hu }, "*"); } catch (x) { /* otro origen */ } return; }
     const r = e.target.closest("[data-r]"), h = e.target.closest("[data-h]");
     if (e.target.closest("#reset")) {
       /* Contrato opcional: la app expone window.DEMO.restablecer(); si no, se limpia el almacenamiento. */
@@ -58,7 +60,13 @@
     if (e.source !== frame.contentWindow || !e.data) return;
     if (e.data.type === "demo-ruta") { hash = e.data.hash || ""; pintar(); }
     if (e.data.demo === "abrir-panel") abrir(true);
+    if (e.data.type === "demo-hu") {
+      const ns = e.data.notas || [];
+      $("gHu").hidden = !ns.length;
+      $("listaHu").innerHTML = ns.map((n) => '<button type="button" class="tt-hu-nota" data-hu="' + esc(n.id) + '"><span class="tt-hu-ref">' + esc(n.hu) + "</span><b>" + esc(n.t) + "</b><span>" + esc(n.d) + "</span></button>").join("");
+    }
   });
+  panel.addEventListener("change", (e) => { if (e.target.id === "escSel") { esc2 = e.target.value; cargar(); } });
   launch.addEventListener("click", () => abrir(true));
   $("close").addEventListener("click", () => abrir(false));
   $("compact").addEventListener("click", () => $("compact").setAttribute("aria-pressed", String(document.body.classList.toggle("tt-compact"))));
