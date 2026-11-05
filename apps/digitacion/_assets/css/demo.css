@@ -603,3 +603,40 @@ body {
 .dg-pop__item--lista:hover {
   background: #fbfbfd;
 }
+
+/* «expulsado»: rojo y negrita; lo atenuado es solo el nombre */
+.dg-pop__item:disabled {
+  opacity: 1;
+}
+.dg-pop__item:disabled > span {
+  opacity: 0.45;
+}
+.dg-pop__item small {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* Juego limpio: primera línea con el número de acciones que suman */
+.dg-fila--acc { height: 3.5rem; }
+.dg-fila--acc:hover { background: #fbfbfd; }
+.dg-acc { font-size: 1rem; font-weight: 700; }
+
+/* Chips: máximo dos líneas (dos por línea) */
+.dg-fila--inc .dg-chip {
+  max-width: calc(50% - 4px);
+}
+.dg-fila--inc .dg-chips {
+  max-height: 46px;
+  overflow: hidden;
+}
+.dg-fila--inc .dg-chips {
+  display: grid;
+  grid-template-columns: repeat(2, fit-content(calc(50% - 2px)));
+  justify-content: center;
+  gap: 2px 4px;
+}
+.dg-fila--inc .dg-chip {
+  max-width: 100%;
+  min-width: 0;
+}
+.dg-fila--inc .dg-chip { justify-self: center; }

@@ -45,7 +45,11 @@
     function add(eq, j, m) {
       t.push({ id: id++, eq: eq, j: j, m: m })
     }
-    if (r[0]) add('ant', 1, r[0].id)
+    var tec = r.filter(function (m) {
+      return m.tecnico && m.expulsa
+    })[0]
+    if (tec) add('ant', 101, tec.id)
+    else if (r[0]) add('ant', 1, r[0].id)
     var base = d.mediciones.filter(function (m) {
       return m.derivadaDe
     })[0]
@@ -118,6 +122,13 @@
     return d.mediciones.reduce(function (s, m) {
       if (m.estado !== 'si') return s
       return s + (m.derivadaDe ? dobles(eq, m).length : cuenta(eq, m.id)) * m.puntos
+    }, 0)
+  }
+  /* Cuántas acciones sumaron al juego limpio: 100 en una sola no es lo mismo que 90 en muchas */
+  function acciones(eq) {
+    return dep().mediciones.reduce(function (s, m) {
+      if (m.estado !== 'si') return s
+      return s + (m.derivadaDe ? dobles(eq, m).length : cuenta(eq, m.id))
     }, 0)
   }
   function editable() {
@@ -209,7 +220,7 @@
       return { nombre: j > 100 ? e.tecnicos[j - 101] : e.jugadores[j - 1], n: por[j] }
     })
   }
-  /* Jugadores como chips que se acomodan en dos líneas; si son más de cuatro, tres y «+N». Alto fijo. */
+  /* Chips en dos líneas como máximo; si son más de cuatro, tres y «+N». */
   function chips(lista, eq, m) {
     var todos = lista
       .map(function (x) {
@@ -431,6 +442,18 @@
         ib('info-circle', 'Detalle de la HU: juego limpio', 'info|jl') +
         '</span></h3><div class="dg-grid" role="table" aria-label="Juego limpio del partido">' +
         cabeza() +
+        fila(
+          'dg-fila--acc',
+          '<span class="dg-et">Acciones que suman</span>',
+          EQUIPOS.map(function (e) {
+            return (
+              '<div class="dg-celda" role="cell"><strong class="dg-acc" role="status" aria-live="polite">' +
+              acciones(e.id) +
+              '</strong></div>'
+            )
+          }).join(''),
+          'acciones'
+        ) +
         fila(
           'dg-fila--total',
           '<span class="dg-et">Total del partido</span>' + tag('Menos es mejor'),
