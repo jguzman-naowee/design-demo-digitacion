@@ -50,5 +50,6 @@
       "etiqueta": "Voleibol"
     }
   ],
-  "escenarioInicial": "futbol"
+  "escenarioInicial": "futbol",
+  "changelog": "changelog.html"
 }

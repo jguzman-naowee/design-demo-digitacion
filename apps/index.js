@@ -7,6 +7,7 @@ window.APPS = [
     "rolParam": "rol",
     "escenarioParam": "deporte",
     "escenarioInicial": "futbol",
+    "changelog": "changelog.html",
     "rolInicial": "coordinador",
     "roles": [
       {

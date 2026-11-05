@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Changelog · Digitación · Juego limpio</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="_assets/css/fuentes.css" />
+    <style>
+      html { font-family: var(--naotech-sdk-font-family, system-ui, sans-serif); }
+      body { margin: 0; background: #f7f7fb; color: #282834; line-height: 1.55; }
+      main { max-width: 52rem; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+      h1 { margin: 0 0 0.25rem; font-size: 1.5rem; }
+      .sub { margin: 0 0 2rem; color: #646587; font-size: 0.9375rem; }
+      h2 { margin: 2.25rem 0 0.5rem; padding-top: 1.25rem; border-top: 1px solid #e6e3ee; font-size: 1.125rem; }
+      h3 { margin: 1.25rem 0 0.25rem; font-size: 0.9375rem; color: #1e3a8a; }
+      ul { margin: 0; padding-left: 1.25rem; }
+      li { margin: 0.25rem 0; font-size: 0.9375rem; }
+      p { margin: 0.25rem 0; font-size: 0.9375rem; }
+      .nota { color: #646587; font-size: 0.8125rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Changelog · Digitación · Juego limpio</h1>
+      <p class="sub">Qué incluye hoy esta demo (PROD-39, Juegos Intercolegiados 2026) y cómo se ha refinado. Los datos son de ejemplo y no se consulta ningún servicio.</p>
+
+      <h2>Juego limpio (JL)</h2>
+
+      <h3>Qué muestra el modal de anotación</h3>
+      <ul>
+        <li>Tres secciones en la pestaña Estadísticas: Estadísticas de juego, Incidencias y Juego limpio. Marcador y Descalificaciones se ven, pero no son accionables.</li>
+        <li>Cada deporte trae sus estadísticas propias: fútbol (faltas, tiro de esquina, tiro libre, tiro penal), fútbol sala y fútbol de salón (faltas, tiro libre, tiro penal), baloncesto (faltas, tiros libres, triples), baloncesto 3x3 (faltas, tiros libres), balonmano (tiros, paradas, pérdidas) y voleibol (aces, bloqueos, errores de saque).</li>
+        <li>Las incidencias suman puntos de juego limpio por equipo; gana el criterio quien acumula menos puntos.</li>
+        <li>El juego limpio cuenta solo en la fase del partido (Fase de grupos · Grupo A) y no se acumula a la siguiente.</li>
+      </ul>
+
+      <h3>Tabla de puntos por deporte</h3>
+      <p>El contador solo suma lo que está en la tabla de su deporte (DIG-CT-01).</p>
+      <ul>
+        <li>Fútbol y fútbol sala: tarjeta amarilla +10, roja por doble amarilla +15, tarjeta roja directa +30, expulsión de cuerpo técnico +80, agresión física o terminación del encuentro +100.</li>
+        <li>Fútbol de salón: tarjeta amarilla +10, tarjeta azul +15, tarjeta roja, expulsión o descalificación +30, expulsión de cuerpo técnico +80, agresión física o terminación del encuentro +100.</li>
+        <li>Baloncesto: expulsión por acumulación de faltas +10, falta técnica +20, falta antideportiva +30, falta descalificadora +50, descalificación de cuerpo técnico +80, conducta violenta o terminación del encuentro +100.</li>
+        <li>Baloncesto 3x3: falta antideportiva +20, falta descalificadora +30, descalificación por acumulación de antideportivas +50, conducta violenta o terminación del encuentro +100.</li>
+        <li>Balonmano: tarjeta amarilla de jugador +10, exclusión de jugador (2 minutos) +15, descalificación de jugador (roja) +25, tarjeta azul de jugador +40, tarjeta amarilla de cuerpo técnico +60, descalificación de cuerpo técnico +100.</li>
+        <li>Voleibol: tarjeta amarilla +10, tarjeta roja +30, expulsión +80, descalificación +90, agresión o terminación (incluye barras y padres) +100.</li>
+      </ul>
+
+      <h3>Reglas que aplica la demo</h3>
+      <ul>
+        <li>La roja por doble amarilla (fútbol y fútbol sala) se deriva sola: dos amarillas al mismo jugador la generan y no se digita a mano.</li>
+        <li>Quien recibe una expulsión queda desactivado en el selector de jugadores, marcado como «expulsado».</li>
+        <li>El cuerpo técnico tiene su propia lista (Entrenador y Asistente) y sus mediciones se atribuyen a ella, no a un jugador.</li>
+        <li>Desempate por deporte: en fútbol, fútbol sala, fútbol de salón, baloncesto y balonmano es el primer criterio, después del enfrentamiento directo; en baloncesto 3x3 va después de «más puntos anotados en promedio»; en voleibol es el quinto criterio, antes del sorteo.</li>
+        <li>Supuesto de la demo: todas las mediciones de la tabla están activas porque la demo muestra cómo se va a ver. En la digitación real aún no existen la expulsión de cuerpo técnico y la «conducta violenta» de baloncesto (César Meneses, 2026-11-04).</li>
+      </ul>
+
+      <h3>Línea «Acciones que suman»</h3>
+      <ul>
+        <li>Primera línea de la tabla de Juego limpio: cuenta cuántas acciones le sumaron puntos a cada equipo. Sirve para distinguir un equipo con 100 puntos en una sola acción de otro con 90 repartidos en muchas.</li>
+        <li>La roja por doble amarilla cuenta como una acción, porque suma sus propios puntos.</li>
+      </ul>
+
+      <h3>Total del partido</h3>
+      <ul>
+        <li>El total de cada equipo se colorea según quién va mejor: el menor en azul, el mayor en rojo y el empate en negro.</li>
+        <li>Un tag «Menos es mejor» bajo el nombre de la fila recuerda cómo se lee el total.</li>
+        <li>Un icono de información junto al título «Juego limpio» explica la regla con un tooltip.</li>
+      </ul>
+
+      <h3>Roles</h3>
+      <ul>
+        <li>Digitador: anota el partido en curso. Si el partido ya está finalizado, solo lo ve.</li>
+        <li>Coordinador: además de anotar, puede corregir el resultado de un partido finalizado con «Corregir resultado»; al guardar, el juego limpio se recalcula solo.</li>
+      </ul>
+
+      <h2>Historias de usuario dentro de la demo</h2>
+      <ul>
+        <li>El panel lista las notas de la historia para el deporte elegido, sin recorrido guiado: al tocar una, la demo lleva a su fila y la resalta unos segundos.</li>
+        <li>Las notas explican qué se maneja en cada deporte: qué suma el contador, quién gana, cada incidencia con sus puntos, la roja por doble amarilla, los jugadores expulsados, el cuerpo técnico y quién puede corregir.</li>
+        <li>Las mediciones que aún no existen en la digitación real aparecen como notas «Pendiente».</li>
+        <li>Cada incidencia y el título de Juego limpio tienen un icono de información que abre un modal con el detalle del dato: deporte, puntos de juego limpio, a quién se atribuye, si expulsa, de dónde viene y si existe hoy en la digitación real.</li>
+      </ul>
+
+      <h2>Mejoras de UI</h2>
+      <ul>
+        <li>Rejilla con filas de alto estable y tablas con patrón cebra en Estadísticas de juego e Incidencias; la primera fila queda blanca para no confundirse con el encabezado.</li>
+        <li>Hover en las filas de las tablas con un tono casi blanco, entre el blanco y el gris de la cebra.</li>
+        <li>Etiquetas «JL +N» como badges azul pastel pequeños, con el icono de información a su derecha y alineado con ellos.</li>
+        <li>Cabecera de las columnas con el nombre del colegio arriba y el departamento siempre debajo.</li>
+        <li>Fila del total sin fondo propio, con el título «Total del partido» y debajo el tag «Menos es mejor».</li>
+        <li>Pie del modal con menos relleno inferior y botón «Finalizar partido» siempre visible; cuerpo del modal con 80 px de margen inferior para no quedar tapado.</li>
+        <li>Pestañas fijas arriba mientras se hace scroll en el cuerpo del modal.</li>
+        <li>«expulsado» en el selector de jugadores va en rojo y negrita; solo el nombre queda atenuado.</li>
+        <li>Lista del popover con patrón cebra y el mismo hover que las tablas; el contador de cada jugador no toca el borde.</li>
+        <li>Panel de la demo: botón «Panel D E M O», escenario en un selector desplegable, notas de historia como lista con divisores y roles pegados.</li>
+      </ul>
+
+      <h2>Mejoras de experiencia</h2>
+      <ul>
+        <li>Cada deporte es un caso distinto en el panel, con su tabla, sus estadísticas y su desempate; al cambiar de deporte los datos de ejemplo se reinician.</li>
+        <li>La demo arranca con datos de ejemplo ya cargados: una expulsión de cuerpo técnico de Antioquia (Entrenador) en los deportes que la tienen, y tarjetas de Valle, para que el total y los colores se vean de entrada.</li>
+        <li>Al sumar una incidencia aparece un badge junto al botón que sube y se desvanece con el cambio en juego limpio: «+N JL» si empeora y «−N JL» si mejora. Con movimiento reducido solo se desvanece.</li>
+        <li>Al cambiar de rol se conserva dónde estás si ese rol puede verlo; «Restablecer datos» vuelve al estado inicial.</li>
+        <li>Un enlace reproduce el estado: rol y deporte viajan en la dirección.</li>
+        <li>El modal de anotación no se cierra, así la demo siempre muestra la pantalla de trabajo.</li>
+      </ul>
+
+      <h2>Mejoras de usabilidad</h2>
+      <ul>
+        <li>Cada incidencia se asigna a un jugador: el botón «+» abre un popover «¿A qué jugador?» con la lista, y para el cuerpo técnico «¿A qué integrante del cuerpo técnico?».</li>
+        <li>El popover se maneja con teclado: flechas para moverse, Escape para cerrar y el foco vuelve al botón.</li>
+        <li>Los jugadores asignados se ven como chips bajo el contador, con «×N» si tienen varias. Los chips ocupan dos líneas como máximo y los nombres largos se cortan con «…».</li>
+        <li>Si hay más de cuatro jugadores, se muestran tres y un chip «+N»; al tocarlo se abre un popover con quién tiene cuántas de esa medición y el total.</li>
+        <li>Steppers con un contenedor que se vuelve blanco al pasar el mouse o enfocarlos con el teclado, con relleno parejo; el botón crece al pasar el mouse y no se anima con movimiento reducido.</li>
+        <li>Los botones deshabilitados no reaccionan al hover: no se puede quitar de un contador en cero ni editar un partido finalizado.</li>
+        <li>Las filas de incidencias crecen solo lo necesario para sus chips; el stepper queda a la misma altura en las dos columnas y el nombre alineado con él.</li>
+        <li>Valores y totales se anuncian a los lectores de pantalla y cada botón tiene su etiqueta, por ejemplo «Agregar tarjeta amarilla a Colegio Demo Antioquia».</li>
+        <li>Con el partido finalizado, un aviso explica por qué no se puede editar y quién puede corregir; mientras se corrige, otro aviso indica que al guardar se recalcula el juego limpio.</li>
+      </ul>
+
+      <h2>Marco de la demo</h2>
+      <ul>
+        <li>Pantalla completa con un botón «Panel D E M O» y el atajo ⌘/Ctrl + Shift + L para abrir el panel.</li>
+        <li>El panel agrupa Ver como (rol), Escenario (deporte), Historias de usuario, Datos (restablecer) y un enlace para abrir el prototipo solo.</li>
+        <li>Este changelog se abre con el botón «Changelog» bajo el título del panel y se cierra con «Volver a la demo».</li>
+        <li>HTML, CSS y JS planos, sin build; funciona en GitHub Pages con los estilos del SDK de Naowee.</li>
+      </ul>
+
+      <p class="nota">Última actualización: 5 de noviembre de 2026.</p>
+    </main>
+  </body>
+</html>

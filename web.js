@@ -4,12 +4,13 @@
   const frame = $("stage"), panel = $("panel"), launch = $("launch");
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const qs = new URLSearchParams(location.search);
-  let app, rol = "", esc2 = "", hash = "";
+  let app, rol = "", esc2 = "", hash = "", chg = false;
 
   const rolP = () => app.rolParam || "rol", escP = () => app.escenarioParam || "hoy";
   const base = () => "apps/" + app.id + "/";
   /* La app recibe rol y escenario por query y la ruta por hash: así un enlace reproduce el estado. */
   const url = () => {
+    if (chg && app.changelog) return base() + app.changelog;
     const p = new URLSearchParams();
     if (rol) p.set(rolP(), rol);
     if (esc2) p.set(escP(), esc2);
@@ -27,6 +28,9 @@
     }).join("");
     $("gEsc").hidden = !(app.escenarios || []).length;
     $("segEsc").innerHTML = '<label class="sr" for="escSel">Escenario</label><select id="escSel" class="tt-sel">' + (app.escenarios || []).map((e) => '<option value="' + esc(e.valor) + '"' + (e.valor === esc2 ? " selected" : "") + ">" + esc(e.etiqueta) + "</option>").join("") + "</select>";
+    $("chg").hidden = !app.changelog;
+    $("chg").textContent = chg ? "Volver a la demo" : "Changelog";
+    $("chg").setAttribute("aria-pressed", String(chg));
     $("solo").href = url();
     const r = roles().find((x) => x.id === rol);
     document.title = (r ? r.etiqueta + " · " : "") + (app.nombre || app.id) + " · Demo web";
@@ -46,6 +50,7 @@
   panel.addEventListener("click", (e) => {
     const hu = e.target.closest("[data-hu]");
     if (hu) { try { frame.contentWindow.postMessage({ demo: "hu-ir", id: hu.dataset.hu }, "*"); } catch (x) { /* otro origen */ } return; }
+    if (e.target.closest("#chg")) { chg = !chg; cargar(); return; }
     const r = e.target.closest("[data-r]"), h = e.target.closest("[data-h]");
     if (e.target.closest("#reset")) {
       /* Contrato opcional: la app expone window.DEMO.restablecer(); si no, se limpia el almacenamiento. */
@@ -53,7 +58,7 @@
       hash = ""; cargar(); return;
     }
     if (h) { esc2 = h.dataset.h; cargar(); }
-    if (r) { if (r.dataset.r !== rol) { rol = r.dataset.r; hash = ""; cargar(); } abrir(false); }
+    if (r) { if (r.dataset.r !== rol) { rol = r.dataset.r; hash = ""; chg = false; cargar(); } abrir(false); }
   });
   /* La app avisa su ruta con postMessage({type:"demo-ruta", hash}) para que cambiar de rol no la pierda. */
   window.addEventListener("message", (e) => {
@@ -66,7 +71,7 @@
       $("listaHu").innerHTML = ns.map((n) => '<button type="button" class="tt-hu-nota" data-hu="' + esc(n.id) + '"><span class="tt-hu-ref">' + esc(n.hu) + "</span><b>" + esc(n.t) + "</b><span>" + esc(n.d) + "</span></button>").join("");
     }
   });
-  panel.addEventListener("change", (e) => { if (e.target.id === "escSel") { esc2 = e.target.value; cargar(); } });
+  panel.addEventListener("change", (e) => { if (e.target.id === "escSel") { esc2 = e.target.value; chg = false; cargar(); } });
   launch.addEventListener("click", () => abrir(true));
   $("close").addEventListener("click", () => abrir(false));
   $("compact").addEventListener("click", () => $("compact").setAttribute("aria-pressed", String(document.body.classList.toggle("tt-compact"))));
@@ -78,7 +83,7 @@
   frame.addEventListener("load", () => { try { frame.contentDocument.addEventListener("keydown", atajo); } catch (x) { /* otro origen */ } });
 
   function abrirApp(id, inicial) {
-    app = window.APPS.find((a) => a.id === id) || window.APPS[0];
+    app = window.APPS.find((a) => a.id === id) || window.APPS[0]; chg = false;
     $("appSel").value = app.id;
     const r = roles();
     rol = inicial && r.some((x) => x.id === qs.get("rol")) ? qs.get("rol") : (app.rolInicial || (r[0] && r[0].id) || "");
