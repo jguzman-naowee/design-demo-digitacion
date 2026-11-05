@@ -640,3 +640,4 @@ body {
   min-width: 0;
 }
 .dg-fila--inc .dg-chip { justify-self: center; }
+.dg-fila--inc .dg-chip { overflow: hidden; }

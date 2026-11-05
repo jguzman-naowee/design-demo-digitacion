@@ -231,8 +231,10 @@
     var h = ver
       .map(function (x) {
         return (
-          '<li class="dg-chip"><span class="dg-chip__n">' +
+          '<li class="dg-chip"><span class="dg-chip__n" title="' +
           esc(x.nombre) +
+          '">' +
+          esc(x.nombre.split(' · ')[0]) +
           '</span>' +
           (x.n > 1 ? '<b>×' + x.n + '</b>' : '') +
           '</li>'
