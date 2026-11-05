@@ -641,3 +641,5 @@ body {
 }
 .dg-fila--inc .dg-chip { justify-self: center; }
 .dg-fila--inc .dg-chip { overflow: hidden; }
+.dg-fila--inc .dg-celda .dg-chips,
+.dg-fila--inc .dg-celda .dg-quien { margin-top: 8px; }
