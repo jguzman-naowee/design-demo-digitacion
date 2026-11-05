@@ -28,6 +28,7 @@
     }).join("");
     $("gEsc").hidden = !(app.escenarios || []).length;
     $("segEsc").innerHTML = '<label class="sr" for="escSel">Escenario</label><select id="escSel" class="tt-sel">' + (app.escenarios || []).map((e) => '<option value="' + esc(e.valor) + '"' + (e.valor === esc2 ? " selected" : "") + ">" + esc(e.etiqueta) + "</option>").join("") + "</select>";
+    document.body.classList.toggle("tt-chg-view", chg);
     $("chg").hidden = !app.changelog;
     $("chg").textContent = chg ? "Volver a la demo" : "Changelog";
     $("chg").setAttribute("aria-pressed", String(chg));
@@ -63,6 +64,7 @@
   /* La app avisa su ruta con postMessage({type:"demo-ruta", hash}) para que cambiar de rol no la pierda. */
   window.addEventListener("message", (e) => {
     if (e.source !== frame.contentWindow || !e.data) return;
+    if (e.data.demo === "cerrar-changelog") { chg = false; cargar(); return; }
     if (e.data.type === "demo-ruta") { hash = e.data.hash || ""; pintar(); }
     if (e.data.demo === "abrir-panel") abrir(true);
     if (e.data.type === "demo-hu") {

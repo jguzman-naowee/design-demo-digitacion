@@ -9,7 +9,21 @@
     <style>
       html { font-family: var(--naotech-sdk-font-family, system-ui, sans-serif); }
       body { margin: 0; background: #f7f7fb; color: #282834; line-height: 1.55; }
-      main { max-width: 52rem; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+      main { max-width: 52rem; margin: 0 auto; padding: 1rem 1.25rem 5rem; }
+      .barra { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: flex-start; gap: 1rem; margin: 0 -1.25rem 1rem; padding: 0.75rem 1.25rem; background: #f7f7fb; border-bottom: 1px solid #e6e3ee; }
+      .barra strong { font-size: 0.875rem; color: #646587; }
+      .cerrar { min-height: 36px; padding: 0 1rem; border: 0; border-radius: 999px; background: #d9420b; color: #fff; font: inherit; font-size: 0.8125rem; font-weight: 700; cursor: pointer; }
+      .cerrar:hover { background: #b93509; }
+      .cerrar:focus-visible { outline: 2px solid #d9420b; outline-offset: 2px; }
+      @media (max-width: 600px) {
+        main { padding: 0 1rem 4rem; }
+        .barra { margin: 0 -1rem 0.75rem; padding: 0.625rem 1rem; }
+        h1 { font-size: 1.25rem; }
+        h2 { font-size: 1.0625rem; margin-top: 1.75rem; }
+        li, p { font-size: 0.875rem; }
+        ul { padding-left: 1.1rem; }
+      }
+      li, p, h1, h2, h3 { overflow-wrap: anywhere; }
       h1 { margin: 0 0 0.25rem; font-size: 1.5rem; }
       .sub { margin: 0 0 2rem; color: #646587; font-size: 0.9375rem; }
       h2 { margin: 2.25rem 0 0.5rem; padding-top: 1.25rem; border-top: 1px solid #e6e3ee; font-size: 1.125rem; }
@@ -22,6 +36,7 @@
   </head>
   <body>
     <main>
+      <div class="barra"><button type="button" class="cerrar" id="cerrar">Cerrar</button><strong>Changelog</strong></div>
       <h1>Changelog · Digitación · Juego limpio</h1>
       <p class="sub">Qué incluye hoy esta demo (PROD-39, Juegos Intercolegiados 2026) y cómo se ha refinado. Los datos son de ejemplo y no se consulta ningún servicio.</p>
 
@@ -129,5 +144,18 @@
 
       <p class="nota">Última actualización: 5 de noviembre de 2026.</p>
     </main>
+    <script>
+      function cerrar() {
+        try {
+          parent.postMessage({ demo: 'cerrar-changelog' }, '*')
+        } catch (e) {
+          /* sin marco */
+        }
+      }
+      document.getElementById('cerrar').addEventListener('click', cerrar)
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') cerrar()
+      })
+    </script>
   </body>
 </html>

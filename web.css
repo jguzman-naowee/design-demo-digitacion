@@ -37,5 +37,8 @@ body.tt-open .tt-launch{display:none}
 .tt-hu-nota:hover,.tt-hu-nota:focus-visible{background:#EFE9F8;outline:none}
 .tt-hu-nota span:last-child{color:var(--mut)}
 .tt-hu-ref{justify-self:start;padding:0 6px;border-radius:6px;background:#dbeafe;color:#1e3a8a;font-size:10.5px;font-weight:600}
-.tt-chg{margin:2px 4px 0;min-height:44px;padding:9px 12px;text-align:left;font-weight:700;font-size:12px;color:var(--v);background:#EFE9F8;border:1px solid transparent;border-radius:10px;cursor:pointer}
-.tt-chg:hover{border-color:var(--v)}
+.tt-chg{align-self:flex-start;margin:4px 10px 0;min-height:32px;padding:4px 14px;font-weight:700;font-size:12px;color:#fff;background:#d9420b;border:0;border-radius:999px;cursor:pointer}
+.tt-chg:hover{background:#b93509}
+.tt-chg:focus-visible{outline:2px solid #d9420b;outline-offset:2px}
+/* El changelog es una página de lectura: el panel va encima y no la empuja */
+body.tt-open.tt-chg-view .stage,body.tt-open.tt-chg-view.tt-compact .stage{transform:none;width:100%}
